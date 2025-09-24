@@ -1,3 +1,18 @@
+# React build
+dist/
+build/
+# Env files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+
 # Logs
 logs
 *.log
