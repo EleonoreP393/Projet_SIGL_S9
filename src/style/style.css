@@ -1,0 +1,38 @@
+body {
+    /* Image de fond */
+    background-image: url('../assets/fond_login.jpg'); /* chemin relatif */
+    background-size: cover;      /* couvre toute la page */
+    background-position: center; /* centre l'image */
+    background-repeat: no-repeat; /* pas de répétition */
+}
+
+h1 {
+    font-family: 'Georgia', serif;
+}
+
+button {
+    font-family: 'Georgia', serif;
+}
+.login-container {
+    background-color: black;   /* fond noir */
+    color: white;              /* texte en blanc */
+    padding: 20px;             /* espace autour du contenu */
+    border-radius: 10px;       /* coins arrondis */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3); /* optionnel : ombre */
+}
+input {
+    border-radius: 10px;       /* coins arrondis */
+    padding: 5px;
+    margin: 5px 0 3px 0;
+    font-family: 'Georgia', serif;
+}
+
+.forgot-password {
+    font-family: 'Georgia', serif;
+    text-decoration: underline; /* souligné */
+    cursor: pointer;           /* indique que c'est cliquable */
+    font-size: 10px;           /* texte plus petit */
+    margin-top: 0;           /* très proche du champ mot de passe */
+    margin-bottom: 20px;       /* espace avant le bouton Se connecter */
+    text-align: center;          /* aligné avec l'input */
+}
