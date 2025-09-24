@@ -30,7 +30,7 @@ function Login() {
             style={{ width: "80%" }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
+        <div>
           <input
             type="password"
             value={password}
@@ -39,6 +39,7 @@ function Login() {
             style={{ width: "80%" }}
           />
         </div>
+        <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
         <button type="submit">Se connecter ♪</button>
       </form>
     </div>
