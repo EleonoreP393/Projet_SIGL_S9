@@ -152,3 +152,262 @@ input {
     height: 52px;
   }
 }
+
+/* ====== Contenu principal sous le bandeau ====== */
+/* évite que le contenu passe sous le logo/bandeau (fixes) */
+.main-content {
+  padding-top: 120px; /* ajuste selon la hauteur réelle du bandeau + logo */
+  padding-left: 0;
+  padding-right: 0;
+}
+/* ====== Encadrés (3 colonnes) ====== */
+.cards-row {
+  width: 100%;
+  margin: 12px 0 32px;           /* pas de centrage horizontal nécessaire */
+  padding-inline: 0;
+  display: grid;
+  box-sizing: border-box;
+  gap: 20px;
+  align-items: start;    /* empêche les cartes de s'étirer */
+  /* Largeurs fixes : chaque colonne est indépendante */
+  --col-left: 300px;      /* largeur fixe */
+  --col-center: 800px;    /* largeur fixe */
+  --col-right: 280px;     /* largeur fixe */
+  grid-template-columns: var(--col-left) var(--col-center) var(--col-right);
+  
+  justify-content: center; /* centre la grille si la somme < 100% */
+}
+/* Style commun des encadrés */
+.card {
+  /* Variables personnalisables par carte (inline style possible) */
+  --radius: 14px;
+  --pad: 18px 20px;
+  --min-h: 160px;
+  background: #000000;
+  color: #ffc421;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: var(--radius);  /* bords ronds */
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+  padding: var(--pad);
+  min-height: var(--min-h);
+  box-sizing: border-box;
+}
+/* Titres des encadrés */
+.card-title {
+  margin: 0 0 30px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.5  rem;
+  color: #ffc421;
+}
+/* ====== Contacts (encadrés individuels) ====== */
+.contacts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+.contact-card {
+  background: rgba(255, 196, 33, 0.08);  /* fond léger doré */
+  border: 1px solid rgba(255, 196, 33, 0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+.contact-card:hover {
+  background: rgba(255, 196, 33, 0.15);
+  border-color: #ffc421;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.2);
+  transform: translateY(-2px);
+}
+.contact-role {
+  margin: 0 0 10px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 196, 33, 0.3);
+  padding-bottom: 6px;
+}
+.contact-details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.contact-details li {
+  margin: 6px 0;
+  line-height: 1.4;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+.contact-details strong {
+  color: #ffffff;
+  margin-right: 4px;
+}
+/* ====== Modificateurs (exemples de tailles indépendantes par carte) ====== */
+.card--left   { --min-h: 220px; --radius: 18px; }
+.card--center { --min-h: 320px; --radius: 14px; --pad: 24px 22px; }
+.card--right  { --min-h: 200px; --radius: 20px; }
+/* Option: variantes de grille prédéfinies (largeur différente par colonne) */
+.cards-row.wide-center   { --col-left: 1fr;   --col-center: 1.4fr; --col-right: 1fr; }
+.cards-row.narrow-left   { --col-left: 0.8fr; --col-center: 1fr;   --col-right: 1.2fr; }
+.cards-row.fixed-sides   { --col-left: 280px; --col-center: 1fr;   --col-right: 320px; }
+
+
+/* ====== Notifications ====== */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.notification-item {
+  background: rgba(255, 196, 33, 0.1);  /* fond jaune très léger */
+  border: 1px solid #ffc421;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.notification-item:hover {
+  background: rgba(255, 196, 33, 0.2);
+  border-color: #ffdd77;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.15);
+  transform: translateY(-2px);
+}
+.notification-text {
+  display: block;
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  
+  /* Tronque le texte à 1 ligne avec ... */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* Au hover, affiche tout le texte */
+  transition: white-space 0.2s ease;
+}
+.notification-item:hover .notification-text {
+  white-space: normal;   /* permet le retour à la ligne */
+  overflow: visible;
+}
+
+/* Badge "nouveau" */
+.notification-item.new::before {
+  content: "•";
+  color: #ff4444;
+  font-size: 1.5rem;
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.notification-item.new .notification-text {
+  padding-left: 16px;
+}
+
+/* ====== Formulaires ====== */
+.formulaires-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.formulaire-item {
+  background: rgba(255, 196, 33, 0.08);
+  border: 1px solid #ffc421;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.formulaire-item:hover {
+  background: rgba(255, 196, 33, 0.15);
+  border-color: #ffdd77;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.2);
+  transform: translateY(-2px);
+}
+.formulaire-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.formulaire-nom {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.05rem;
+  color: #ffffff;
+  font-weight: bold;
+  flex: 1;
+}
+.formulaire-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-ouvert {
+  background: #28a745;
+  color: #fff;
+}
+.badge-bientot_ferme {
+  background: #ff9800;  /* Orange pour urgence */
+  color: #fff;
+  animation: pulse 2s infinite;  /* Animation pour attirer l'attention */
+}
+.badge-ferme {
+  background: #dc3545;
+  color: #fff;
+}
+.badge-pas_ouvert {
+  background: #6c757d;
+  color: #fff;
+}
+/* Animation pour "bientôt fermé" */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+.formulaire-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.date-info {
+  font-size: 0.85rem;
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+}
+.date-info strong {
+  color: #ffffff;
+  margin-right: 6px;
+}
+/* Mise en évidence pour "bientôt fermé" */
+.formulaire-item.status-bientot_ferme {
+  border: 2px solid #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+}
+.formulaire-item.status-bientot_ferme:hover {
+  border-color: #ff9800;
+  box-shadow: 0 4px 16px rgba(255, 152, 0, 0.3);
+}
+/* Message si aucun formulaire */
+.no-formulaires {
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+}
