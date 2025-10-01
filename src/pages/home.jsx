@@ -229,7 +229,7 @@ const formatDateComplete = (dateString) => {
         </ul>
       </nav>
       <main className="main-content">
-        <section className="cards-row">
+        <section className="cards-grid">
           <article className="card card--coordonnees">
             <h2 className="card-title">Coordonnées</h2>
             <div className="contacts-container">
