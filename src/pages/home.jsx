@@ -133,11 +133,83 @@ function Home() {
     { id: 5, message: "Votre livret d'apprentissage a été validé par le coordinateur pédagogique", isNew: true},
   ];
 
-  // Fonction pour formater les dates
-  const formatDate = (dateString) => {
-    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString('fr-FR', options);
-  };
+  // Événements musicaux à venir (plus tard depuis BDD)
+const evenements = [
+  {
+    id: 1,
+    titre: "Scène Ouverte - Jazz & Blues",
+    date: "2025-10-08",
+    heure: "18:00",
+    lieu: "Salle de concert",
+    type: "Scène Ouverte",
+    description: "Venez jouer et partager vos morceaux préférés"
+  },
+  {
+    id: 2,
+    titre: "Atelier Improvisation Vocale",
+    date: "2025-10-12",
+    heure: "14:00",
+    lieu: "Studio A",
+    type: "Atelier",
+    description: "Atelier pratique ouvert à tous niveaux"
+  },
+  {
+    id: 3,
+    titre: "Audition Concert de Fin d'Année",
+    date: "2025-10-20",
+    heure: "16:00",
+    lieu: "Auditorium",
+    type: "Audition",
+    description: "Présentez votre morceau pour le concert annuel"
+  },
+  {
+    id: 4,
+    titre: "Jam Session - Rock",
+    date: "2025-10-05",
+    heure: "19:30",
+    lieu: "Salle de répétition B",
+    type: "Jam Session",
+    description: "Session collective, apportez vos instruments !"
+  },
+  {
+    id: 5,
+    titre: "Concert des Élèves",
+    date: "2025-10-25",
+    heure: "20:00",
+    lieu: "Auditorium Municipal",
+    type: "Concert",
+    description: "Présentez vos talents devant le public"
+  },
+  {
+    id: 6,
+    titre: "Master Class - Guitare Classique",
+    date: "2025-10-15",
+    heure: "17:00",
+    lieu: "Grande salle",
+    type: "Master Class",
+    description: "Avec le professeur Jean Dupuis"
+  },
+];
+
+// Filtre les événements à venir (pas encore passés)
+const evenementsAVenir = evenements
+  .filter(event => {
+    const eventDate = new Date(event.date);
+    const aujourdhui = new Date();
+    aujourdhui.setHours(0, 0, 0, 0);
+    return eventDate >= aujourdhui;
+  })
+  .sort((a, b) => new Date(a.date) - new Date(b.date)); // Trie par date
+// Fonction pour formater les dates
+const formatDate = (dateString) => {
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  return new Date(dateString).toLocaleDateString('fr-FR', options);
+};
+// Fonction pour formater date avec jour de la semaine
+const formatDateComplete = (dateString) => {
+  const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
+  return new Date(dateString).toLocaleDateString('fr-FR', options);
+};
 
   return (
     <>
@@ -158,7 +230,7 @@ function Home() {
       </nav>
       <main className="main-content">
         <section className="cards-row">
-          <article className="card card--left">
+          <article className="card card--coordonnees">
             <h2 className="card-title">Coordonnées</h2>
             <div className="contacts-container">
               {contacts.map((contact) => (
@@ -174,7 +246,7 @@ function Home() {
             </div>
           </article>
 
-          <article className="card card--center">
+          <article className="card card--formulaires">
             <h2 className="card-title">Formulaires à compléter</h2>
             <div className="formulaires-list">
               {formulairesAfficher.length > 0 ? (
@@ -202,7 +274,7 @@ function Home() {
             </div>
           </article>
 
-          <article className="card card--right">
+          <article className="card card--notifications">
             <h2 className="card-title">Notifications</h2>
             <div className="notifications-list">
               {notifications.map((notif) => (
@@ -210,6 +282,46 @@ function Home() {
                   <span className="notification-text">{notif.message}</span>
                 </div>
               ))}
+            </div>
+          </article>
+
+          <article className="card card--evenements">
+            <h2 className="card-title">Événements & Ateliers</h2>
+            <div className="evenements-list">
+              {evenementsAVenir.length > 0 ? (
+                evenementsAVenir.map((event) => (
+                  <div key={event.id} className="evenement-item">
+                    <div className="evenement-date-block">
+                      <span className="evenement-jour">{new Date(event.date).getDate()}</span>
+                      <span className="evenement-mois">
+                        {new Date(event.date).toLocaleDateString('fr-FR', { month: 'short' })}
+                      </span>
+                    </div>
+                    <div className="evenement-details">
+                      <div className="evenement-header">
+                        <h3 className="evenement-titre">{event.titre}</h3>
+                        <span className={`evenement-type type-${event.type.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {event.type}
+                        </span>
+                      </div>
+                      <p className="evenement-description">{event.description}</p>
+                      <div className="evenement-infos">
+                        <span className="evenement-info">
+                          <strong>📅</strong> {formatDateComplete(event.date)}
+                        </span>
+                        <span className="evenement-info">
+                          <strong>🕐</strong> {event.heure}
+                        </span>
+                        <span className="evenement-info">
+                          <strong>📍</strong> {event.lieu}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="no-evenements">Aucun événement prévu pour le moment.</p>
+              )}
             </div>
           </article>
         </section>
