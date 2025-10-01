@@ -1,38 +1,154 @@
+/* ====== Base ====== */
 body {
-    /* Image de fond */
-    background-image: url('../assets/fond_login.jpg'); /* chemin relatif */
-    background-size: cover;      /* couvre toute la page */
-    background-position: center; /* centre l'image */
-    background-repeat: no-repeat; /* pas de répétition */
+  background-color: white;
+  margin: 0;
 }
 
 h1 {
-    font-family: 'Georgia', serif;
+  font-family: 'Georgia', serif;
+  color: rgb(255, 255, 255);
 }
 
 button {
-    font-family: 'Georgia', serif;
+  font-family: 'Georgia', serif;
 }
+
+/* ====== Page Login ====== */
+.login_body {
+  position: fixed;
+  inset: 0; /* top/right/bottom/left: 0 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../assets/fond_login.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
 .login-container {
-    background-color: black;   /* fond noir */
-    color: white;              /* texte en blanc */
-    padding: 20px;             /* espace autour du contenu */
-    border-radius: 10px;       /* coins arrondis */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3); /* optionnel : ombre */
+  background-color: black;   /* fond noir */
+  color: white;              /* texte en blanc */
+  padding: 20px;             /* espace autour du contenu */
+  border-radius: 10px;       /* coins arrondis */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
+
 input {
-    border-radius: 10px;       /* coins arrondis */
-    padding: 5px;
-    margin: 5px 0 3px 0;
-    font-family: 'Georgia', serif;
+  border-radius: 10px;       /* coins arrondis */
+  padding: 5px;
+  margin: 5px 0 3px 0;
+  font-family: 'Georgia', serif;
 }
 
 .forgot-password {
-    font-family: 'Georgia', serif;
-    text-decoration: underline; /* souligné */
-    cursor: pointer;           /* indique que c'est cliquable */
-    font-size: 10px;           /* texte plus petit */
-    margin-top: 0;           /* très proche du champ mot de passe */
-    margin-bottom: 20px;       /* espace avant le bouton Se connecter */
-    text-align: center;          /* aligné avec l'input */
+  font-family: 'Georgia', serif;
+  text-decoration: underline; /* souligné */
+  cursor: pointer;
+  font-size: 10px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ====== Header + Logo ====== */
+/* Le header ne réserve pas d'espace dans le flux */
+.site-header {
+  position: relative;
+  height: 0;        /* empêche de pousser le contenu */
+  overflow: visible;
+}
+
+/* Logo fixé en haut à gauche */
+.site-logo {
+  position: fixed;
+  top: 16px;
+  left: 80px;
+  height: 100px;     /* ajuste selon le rendu souhaité */
+  width: auto;
+  object-fit: contain;
+  transform: none;  /* on retire l'ancien translate */
+  z-index: 10000;
+}
+
+/* ====== Bandeau noir (Topnav) ====== */
+/* Bandeau centré horizontalement en haut de la page */
+.topnav {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(60vw, 1200px);
+  min-width: 320px;
+  margin: 0;
+  background: #000;
+  color: #fff;
+  border-radius: 10px;
+  z-index: 9999;             /* juste sous le logo */
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Contenu interne du bandeau */
+.topnav-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px 16px;        /* ajuste pour modifier la hauteur du bandeau */
+  width: 100%;
+  display: flex;
+  gap: 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topnav-item {
+  flex: 1 1 0;               /* chaque item prend la même largeur */
+  text-align: center;
+  min-width: 0;
+}
+
+.topnav-link {
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Georgia', serif;
+  font-size: 1.125rem;
+  padding: 10px 8px;         /* vertical + horizontal */
+}
+
+/* Hover / focus */
+.topnav-link:hover,
+.topnav-link:focus {
+  color: #ffc421;
+  outline: none;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 600px) {
+  /* Le bandeau occupe (presque) toute la largeur avec marges */
+  .topnav {
+    width: calc(100vw - 24px * 2);
+  }
+
+  .topnav-list {
+    gap: 10px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .topnav-link {
+    font-size: 0.95rem;
+    padding: 6px 8px;
+  }
+
+  /* Logo légèrement plus petit en mobile */
+  .site-logo {
+    top: 12px;
+    left: 12px;
+    height: 52px;
+  }
 }
