@@ -18,30 +18,32 @@ function Login() {
   };
 
   return (
-    <div className="login-container" style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h1>♫ Star ♫ Academy ♪</h1>
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: "10px" }}>
-          <input
-            type="text"
-            value={username}
-            placeholder="Identifiant"
-            onChange={(e) => setUsername(e.target.value)}
-            style={{ width: "80%" }}
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            value={password}
-            placeholder="Mot de passe"
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "80%" }}
-          />
-        </div>
-        <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
-        <button type="submit">Se connecter ♪</button>
-      </form>
+    <div className="login_body">
+      <div className="login-container" style={{ maxWidth: "400px", margin: "50px auto" }}>
+        <h1>♫ Star ♫ Academy ♪</h1>
+        <form onSubmit={handleLogin}>
+          <div style={{ marginBottom: "10px" }}>
+            <input
+              type="text"
+              value={username}
+              placeholder="Identifiant"
+              onChange={(e) => setUsername(e.target.value)}
+              style={{ width: "80%" }}
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={password}
+              placeholder="Mot de passe"
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ width: "80%" }}
+            />
+          </div>
+          <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
+          <button type="submit">Se connecter ♪</button>
+        </form>
+      </div>
     </div>
   );
 }

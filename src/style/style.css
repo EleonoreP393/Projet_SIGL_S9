@@ -1,12 +1,22 @@
-/* body par défaut (autres pages) */
+/* ====== Base ====== */
 body {
   background-color: white;
   margin: 0;
 }
 
+h1 {
+  font-family: 'Georgia', serif;
+  color: rgb(255, 255, 255);
+}
+
+button {
+  font-family: 'Georgia', serif;
+}
+
+/* ====== Page Login ====== */
 .login_body {
   position: fixed;
-  inset: 0;                 /* top:0; right:0; bottom:0; left:0; */
+  inset: 0; /* top/right/bottom/left: 0 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,139 +27,87 @@ body {
   z-index: 0;
 }
 
-
-h1 {
-    font-family: 'Georgia', serif;
-    color: rgb(255, 255, 255);
-}
-
-button {
-    font-family: 'Georgia', serif;
-}
 .login-container {
-    background-color: black;   /* fond noir */
-    color: white;              /* texte en blanc */
-    padding: 20px;             /* espace autour du contenu */
-    border-radius: 10px;       /* coins arrondis */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3); /* optionnel : ombre */
+  background-color: black;   /* fond noir */
+  color: white;              /* texte en blanc */
+  padding: 20px;             /* espace autour du contenu */
+  border-radius: 10px;       /* coins arrondis */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
+
 input {
-    border-radius: 10px;       /* coins arrondis */
-    padding: 5px;
-    margin: 5px 0 3px 0;
-    font-family: 'Georgia', serif;
+  border-radius: 10px;       /* coins arrondis */
+  padding: 5px;
+  margin: 5px 0 3px 0;
+  font-family: 'Georgia', serif;
 }
 
 .forgot-password {
-    font-family: 'Georgia', serif;
-    text-decoration: underline; /* souligné */
-    cursor: pointer;           /* indique que c'est cliquable */
-    font-size: 10px;           /* texte plus petit */
-    margin-top: 0;           /* très proche du champ mot de passe */
-    margin-bottom: 20px;       /* espace avant le bouton Se connecter */
-    text-align: center;          /* aligné avec l'input */
-}
-
-/* --- Header (titre centré en haut, sans logo) --- */
-.site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200px;                 /* hauteur du header */
-  background: transparent;
-  z-index: 9999;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;      /* centre horizontalement le titre */
-  box-sizing: border-box;
-}
-
-/* Conteneur interne (garde la possibilité d'ajouter des éléments si besoin) */
-.header-inner {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;
-  height: 100%;
-  position: relative;
-}
-
-/* centre-block contient uniquement le titre */
-.center-block {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* titre centré */
-.site-title {
-  margin: 0;
   font-family: 'Georgia', serif;
-  font-size: 8rem;   /* ajuste selon le rendu souhaité */
-  font-weight: 600;
-  color: #111;
-  line-height: 1;
+  text-decoration: underline; /* souligné */
+  cursor: pointer;
+  font-size: 10px;
+  margin-top: 0;
+  margin-bottom: 20px;
   text-align: center;
 }
 
-/* logo en haut à gauche */
+/* ====== Header + Logo ====== */
+/* Le header ne réserve pas d'espace dans le flux */
+.site-header {
+  position: relative;
+  height: 0;        /* empêche de pousser le contenu */
+  overflow: visible;
+}
+
+/* Logo fixé en haut à gauche */
 .site-logo {
-  position: absolute;
-  left: 0;                       /* ancre au bord gauche du conteneur */
-  top: 50%;
-  transform: translate(-200px, -50%); /* pousse vers la gauche de 200px */
-  height: 150px;
+  position: fixed;
+  top: 16px;
+  left: 80px;
+  height: 100px;     /* ajuste selon le rendu souhaité */
   width: auto;
   object-fit: contain;
+  transform: none;  /* on retire l'ancien translate */
   z-index: 10000;
 }
 
-
-
-
-/* Bandeau noir sous le header */
+/* ====== Bandeau noir (Topnav) ====== */
+/* Bandeau centré horizontalement en haut de la page */
 .topnav {
-  position: absolute;
-  top: 200px;                /* place le bandeau juste sous le header (ici header height = 200px) */
+  position: fixed;
+  top: 16px;
   left: 50%;
-  transform: translateX(-50%); /* centre horizontalement */
-  width: 60vw;
-  max-width: 1200px;
+  transform: translateX(-50%);
+  width: min(60vw, 1200px);
   min-width: 320px;
-  margin: 0;                 /* plus de margin-top */
+  margin: 0;
   background: #000;
   color: #fff;
   border-radius: 10px;
-  z-index: 9998;
+  z-index: 9999;             /* juste sous le logo */
   box-sizing: border-box;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Liste centrée dans le bandeau */ 
+/* Contenu interne du bandeau */
 .topnav-list {
   list-style: none;
   margin: 0;
-  padding: 18px 24px;
+  padding: 10px 16px;        /* ajuste pour modifier la hauteur du bandeau */
   width: 100%;
   display: flex;
   gap: 0;
   align-items: center;
-  justify-content: space-between; /* <- espace entre chaque item sur toute la largeur du bandeau */
+  justify-content: space-between;
 }
-
 
 .topnav-item {
-  flex: 1 1 0;            /* chaque item prend une part égale de l'espace */
+  flex: 1 1 0;               /* chaque item prend la même largeur */
   text-align: center;
-  min-width: 0;           /* permet de réduire si espace limité */
+  min-width: 0;
 }
 
-/* Lien du bandeau */
 .topnav-link {
   display: inline-block;
   width: 100%;
@@ -158,95 +116,39 @@ input {
   text-decoration: none;
   font-family: 'Georgia', serif;
   font-size: 1.125rem;
-  padding: 10px 8px;
+  padding: 10px 8px;         /* vertical + horizontal */
 }
 
 /* Hover / focus */
 .topnav-link:hover,
 .topnav-link:focus {
-  background: rgba(255, 173, 50, 0.08);
-  color: #ffc421;               /* couleur du texte au survol */
+  color: #ffc421;
   outline: none;
 }
 
-/* Responsive : wrap si écran étroit */
+/* ====== Responsive ====== */
 @media (max-width: 600px) {
+  /* Le bandeau occupe (presque) toute la largeur avec marges */
+  .topnav {
+    width: calc(100vw - 24px * 2);
+  }
+
   .topnav-list {
     gap: 10px;
-    padding: 10px 12px;
+    padding: 8px 12px;
     flex-wrap: wrap;
-    justify-content: center
+    justify-content: center;
   }
-  .topnav-link { font-size: 0.95rem; padding: 6px 8px; }
-}
 
-/* conteneur des bulles sous le bandeau (centré sous la topnav) */
-.bubbles-section {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 24px; /* espace entre la topnav et les bulles */
-  pointer-events: auto;
-  box-sizing: border-box;
-}
+  .topnav-link {
+    font-size: 0.95rem;
+    padding: 6px 8px;
+  }
 
-/* colonne centrée et limitée en largeur */
-.bubbles-column {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;             /* espacement vertical entre les bulles */
-  align-items: center;
-  width: 100%;
-  max-width: 320px;      /* largeur de la colonne ; ajuste si besoin */
-  padding: 8px 16px;
-  box-sizing: border-box;
-}
-
-/* style commun des 3 bulles */
-.bubble_left,
-.bubble_center,
-.bubble_right {
-  width: 128px;
-  height: 128px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.85); /* fond sombre — change si tu veux clair */
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-  transition: transform 180ms ease, box-shadow 180ms ease;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* icône / numéro dans la bulle */
-.bubble-icon {
-  font-size: 1.8rem;
-  line-height: 1;
-  margin-bottom: 6px;
-  display: block;
-}
-
-/* label sous l'icône */
-.bubble-label {
-  font-family: 'Georgia', serif;
-  font-size: 0.95rem;
-  margin: 0;
-  padding: 0;
-}
-
-/* hover / focus */
-.bubble_left:hover,
-.bubble_center:hover,
-.bubble_right:hover,
-.bubble_left:focus-within,
-.bubble_center:focus-within,
-.bubble_right:focus-within {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 14px 36px rgba(0,0,0,0.45);
-  cursor: pointer;
+  /* Logo légèrement plus petit en mobile */
+  .site-logo {
+    top: 12px;
+    left: 12px;
+    height: 52px;
+  }
 }
