@@ -18,9 +18,16 @@ function Login() {
   };
 
   return (
-    <div className="login-container" style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h1>♫ Star ♫ Academy ♪</h1>
-      <form onSubmit={handleLogin}>
+      <div className="login-container" style={{ maxWidth: "400px", margin: "50px auto" }}>
+        <div className="header-flex">
+          <h1>♫ Star ♫ Academy ♪</h1>
+          <div className="button-group">
+            <button type="button">Bouton 1</button>
+            <button type="button">Bouton 2</button>
+            <button type="button">Bouton 3</button>
+          </div>
+        </div>
+        <form onSubmit={handleLogin}>
         <div style={{ marginBottom: "10px" }}>
           <input
             type="text"

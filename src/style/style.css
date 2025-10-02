@@ -13,6 +13,10 @@ h1 {
 button {
     font-family: 'Georgia', serif;
 }
+button:hover{
+    border-color: rgb(211, 202, 101);
+}
+
 .login-container {
     background-color: black;   /* fond noir */
     color: white;              /* texte en blanc */
@@ -35,4 +39,144 @@ input {
     margin-top: 0;           /* très proche du champ mot de passe */
     margin-bottom: 20px;       /* espace avant le bouton Se connecter */
     text-align: center;          /* aligné avec l'input */
+}
+
+.titreCategorie {
+    color: rgb(211, 202, 101); 
+}
+
+.buttonAnnee1 {
+    background-color: rgb(240, 240, 220);
+    color: black;
+    border-top-right-radius: 0%;
+    border-bottom-right-radius: 0%;
+}
+
+.buttonAnnee2 {
+    background-color: rgb(240, 240, 220);
+    color: black;
+    border-top-right-radius: 0%;
+    border-bottom-right-radius: 0%;
+    border-top-left-radius: 0%;
+    border-bottom-left-radius: 0%;
+}
+
+.buttonAnnee3 {
+    background-color: rgb(240, 240, 220);
+    color: black;
+    border-top-left-radius: 0%;
+    border-bottom-left-radius: 0%;
+}
+
+.header-flex {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: fixed;
+    left: 5%;
+    top: -1px;
+    width: 90%;
+    background-color: #000000;
+    padding-left: 30px
+}
+
+.header-flex .titreCategorie {
+    min-width: 220px;
+    text-align: left;
+    margin-right: 40px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    height: 30px;
+    align-items: center;
+}
+
+.livrable-container {
+    margin-top: 80px; 
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 85vw;
+    max-width: 85vw;
+    box-sizing: content-box;
+}
+
+.livrable-item {
+    background: black /*rgb(240, 240, 220, 0.8)*/;
+    margin-bottom: 24px;
+    border-radius: 16px;
+    border: 4px solid #d3ca65;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    min-width: 350px;
+    max-width: 900px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    transition: box-shadow 0.2s;
+}
+
+.livrable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 16px;
+    background-color: #d3ca65;
+    padding: 0px 20px 0px 20px;
+}
+
+.livrable-texte {
+    font-size: 1em;
+    color: #333;
+    font-family: 'Georgia', serif;
+}
+.livrable-header .livrable-texte:first-child {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 1px;
+}
+.livrable-header .livrable-texte:nth-child(2) {
+    font-size: 0.95em;
+    color: #000000;
+    margin-left: 12px;
+}
+
+.VoirLivrableButton {
+    background: linear-gradient(90deg, #e0d78a 60%, #bfa900 100%);
+    color: #222;
+    border: 2px solid white ;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Georgia', serif;
+    box-shadow: 0 2px 8px rgba(211,202,101,0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.VoirLivrableButton:hover {
+    background: linear-gradient(90deg, #bfa900 60%, #d3ca65 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(211,202,101,0.18);
+}
+.livrable-description {
+    flex-direction: column;
+    gap: 40px;
+    margin: 10px 10px;
+}
+.livrable-acteur {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 0.98em;
+    color: #444;
+    background: #f8f8e7;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    margin-bottom: 5px;
 }
