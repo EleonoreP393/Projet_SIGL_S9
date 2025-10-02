@@ -1,6 +1,7 @@
 import React from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
+import { notifications } from "../data/notifications";
 
 function Home() {
   const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications", "Livret" ]; // labels du bandeau
@@ -38,7 +39,7 @@ function Home() {
       email: "pierre.martin@example.com"
     },
     // null sera ignoré
-  ].filter(contact => contact !== null); // filtre les valeurs null
+  ];
 
   // Formulaires à compléter (plus tard depuis BDD)
   const formulaires = [
@@ -124,15 +125,6 @@ function Home() {
       (form.statut === 'ouvert' || form.statut === 'bientot_ferme')
     );
 
-  // Notifications exemple (plus tard depuis BDD)
-  const notifications = [
-    { id: 1, message: "Nouvelle évaluation disponible pour le module React", isNew: false },
-    { id: 2, message: "Réunion prévue le 15 octobre à 14h avec votre tuteur", isNew: false },
-    { id: 3, message: "Document administratif à signer avant vendredi", isNew: false },
-    { id: 4, message: "Rappel : compléter votre journal de formation", isNew: true },
-    { id: 5, message: "Votre livret d'apprentissage a été validé par le coordinateur pédagogique", isNew: true},
-  ];
-
   // Événements musicaux à venir (plus tard depuis BDD)
 const evenements = [
   {
@@ -211,6 +203,22 @@ const formatDateComplete = (dateString) => {
   return new Date(dateString).toLocaleDateString('fr-FR', options);
 };
 
+const READ_KEY = "readNotificationIds_v1";
+function getReadIds() {
+  try {
+    const raw = localStorage.getItem(READ_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+// Filtrer uniquement les nouvelles (isNew ET pas dans lus)
+const readIds = getReadIds();
+const newNotifications = notifications
+  .map(n => ({ ...n, isNew: n.isNew && !readIds.has(n.id) }))
+  .filter(n => n.isNew);
+
   return (
     <>
       <header className="site-header" role="banner">
@@ -277,11 +285,15 @@ const formatDateComplete = (dateString) => {
           <article className="card card--notifications">
             <h2 className="card-title">Notifications</h2>
             <div className="notifications-list">
-              {notifications.map((notif) => (
-                <div key={notif.id} className={`notification-item ${notif.isNew ? 'new' : ''}`} title={notif.message}>
-                  <span className="notification-text">{notif.message}</span>
-                </div>
-              ))}
+              {newNotifications.length > 0 ? (
+                newNotifications.map((notif) => (
+                  <div key={notif.id} className="notification-item new" title={notif.message}>
+                    <span className="notification-text">{notif.message}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-notifications">Aucune nouvelle notification.</p>
+              )}
             </div>
           </article>
 
