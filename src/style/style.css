@@ -65,7 +65,7 @@ input {
   position: fixed;
   top: 16px;
   left: 80px;
-  height: 100px;     /* ajuste selon le rendu souhaité */
+  height: 100px;
   width: auto;
   object-fit: contain;
   transform: none;  /* on retire l'ancien translate */
@@ -94,7 +94,7 @@ input {
 .topnav-list {
   list-style: none;
   margin: 0;
-  padding: 10px 16px;        /* ajuste pour modifier la hauteur du bandeau */
+  padding: 10px 16px;
   width: 100%;
   display: flex;
   gap: 0;
@@ -145,10 +145,455 @@ input {
     padding: 6px 8px;
   }
 
-  /* Logo légèrement plus petit en mobile */
   .site-logo {
     top: 12px;
     left: 12px;
     height: 52px;
+  }
+}
+
+/* ====== Contenu principal sous le bandeau ====== */
+/* évite que le contenu passe sous le logo/bandeau (fixes) */
+.main-content {
+  padding-top: 120px;
+  padding-left: 0;
+  padding-right: 0;
+}
+/* ====== Encadrés (3 colonnes) ====== */
+.cards-grid {
+  display: grid;
+  width: 100%;
+  max-width: 1400px;
+  margin: 12px 0 32px;           /* pas de centrage horizontal nécessaire */
+  grid-template-columns: 300px 800px 280px;
+  gap: 20px;
+  padding-inline: 0;
+  box-sizing: border-box;
+  align-items: start;    /* empêche les cartes de s'étirer */
+  justify-content: center; /* centre la grille si la somme < 100% */
+}
+
+/* Style commun des encadrés */
+.card {
+  /* Variables personnalisables par carte (inline style possible) */
+  --radius: 14px;
+  --pad: 18px 20px;
+  --min-h: 160px;
+  background: #000000;
+  color: #ffc421;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: var(--radius);  /* bords ronds */
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+  padding: var(--pad);
+  min-height: var(--min-h);
+  box-sizing: border-box;
+}
+/* Titres des encadrés */
+.card-title {
+  margin: 0 0 30px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.5  rem;
+  color: #ffc421;
+}
+
+/* ====== Contacts (encadrés individuels) ====== */
+.contacts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+.contact-card {
+  background: rgba(255, 196, 33, 0.08);  /* fond léger doré */
+  border: 1px solid rgba(255, 196, 33, 0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+.contact-card:hover {
+  background: rgba(255, 196, 33, 0.15);
+  border-color: #ffc421;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.2);
+  transform: translateY(-2px);
+}
+.contact-role {
+  margin: 0 0 10px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 196, 33, 0.3);
+  padding-bottom: 6px;
+}
+.contact-details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.contact-details li {
+  margin: 6px 0;
+  line-height: 1.4;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+.contact-details strong {
+  color: #ffffff;
+  margin-right: 4px;
+}
+
+/* Coordonnées sur 2 lignes, colonne 1 */
+.card--coordonnees {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+/* Formulaires haut, centre */
+.card--formulaires {
+  grid-column: 2;
+  grid-row: 1;
+}
+/* Notifications haut, droite */
+.card--notifications {
+  grid-column: 3;
+  grid-row: 1;
+}
+/* Événements sous Formulaires+Notif, centre+droit */
+.card--evenements {
+  grid-column: 2 / span 2;
+  grid-row: 2;
+}
+
+/* ====== Notifications ====== */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.notification-item {
+  background: rgba(255, 196, 33, 0.1);  /* fond jaune très léger */
+  border: 1px solid #ffc421;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.notification-item:hover {
+  background: rgba(255, 196, 33, 0.2);
+  border-color: #ffdd77;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.15);
+  transform: translateY(-2px);
+}
+.notification-text {
+  display: block;
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  
+  /* Ajoute à la fin du texte à 1 ligne: ... */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* Au hover, affiche tout le texte */
+  transition: white-space 0.2s ease;
+}
+.notification-item:hover .notification-text {
+  white-space: normal;   /* permet le retour à la ligne */
+  overflow: visible;
+}
+
+/* Badge "nouveau" */
+.notification-item.new::before {
+  content: "•";
+  color: #ff4444;
+  font-size: 1.5rem;
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.notification-item.new .notification-text {
+  padding-left: 16px;
+}
+
+/* ====== Formulaires ====== */
+.formulaires-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.formulaire-item {
+  background: rgba(255, 196, 33, 0.08);
+  border: 1px solid #ffc421;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.formulaire-item:hover {
+  background: rgba(255, 196, 33, 0.15);
+  border-color: #ffdd77;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.2);
+  transform: translateY(-2px);
+}
+.formulaire-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.formulaire-nom {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.05rem;
+  color: #ffffff;
+  font-weight: bold;
+  flex: 1;
+}
+.formulaire-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-ouvert {
+  background: #28a745;
+  color: #fff;
+}
+.badge-bientot_ferme {
+  background: #ff9800;  /* Orange pour urgence */
+  color: #fff;
+  animation: pulse 2s infinite;  /* Animation pour attirer l'attention */
+}
+.badge-ferme {
+  background: #dc3545;
+  color: #fff;
+}
+.badge-pas_ouvert {
+  background: #6c757d;
+  color: #fff;
+}
+/* Animation pour "bientôt fermé" */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+.formulaire-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.date-info {
+  font-size: 0.85rem;
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+}
+.date-info strong {
+  color: #ffffff;
+  margin-right: 6px;
+}
+/* Mise en évidence pour "bientôt fermé" */
+.formulaire-item.status-bientot_ferme {
+  border: 2px solid #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+}
+.formulaire-item.status-bientot_ferme:hover {
+  border-color: #ff9800;
+  box-shadow: 0 4px 16px rgba(255, 152, 0, 0.3);
+}
+/* Message si aucun formulaire */
+.no-formulaires {
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+}
+
+
+/* ====== Evénements ====== */
+.cards-row-single {
+  width: 100%;
+  margin: 12px 0 32px;
+  padding-inline: 0;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.card--events {
+  width: min(90%, 1400px);
+  --radius: 14px;
+  --pad: 24px 22px;
+}
+/* ====== Événements musicaux ====== */
+.evenements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+.evenement-item {
+  background: rgba(255, 196, 33, 0.08);
+  border: 2px solid #ffc421;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+.evenement-item:hover {
+  background: rgba(255, 196, 33, 0.15);
+  border-color: #ffdd77;
+  box-shadow: 0 6px 20px rgba(255, 196, 33, 0.3);
+  transform: translateY(-2px);
+}
+.evenement-date-block {
+  background: linear-gradient(135deg, #ffc421 0%, #ffdd77 100%);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+.evenement-jour {
+  font-size: 1.9rem;
+  font-weight: bold;
+  color: #000;
+  line-height: 1;
+  font-family: 'Georgia', serif;
+}
+.evenement-mois {
+  font-size: 0.85rem;
+  color: #000;
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+}
+.evenement-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.evenement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.evenement-titre {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.15rem;
+  color: #ffffff;
+  font-weight: bold;
+  flex: 1;
+  min-width: 200px;
+}
+.evenement-type {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Georgia', serif;
+}
+/* Types d'événements */
+.type-scène-ouverte {
+  background: #9c27b0;
+  color: #fff;
+}
+.type-atelier {
+  background: #2196f3;
+  color: #fff;
+}
+.type-audition {
+  background: #ff5722;
+  color: #fff;
+}
+.type-jam-session {
+  background: #ff9800;
+  color: #fff;
+}
+.type-concert {
+  background: #e91e63;
+  color: #fff;
+}
+.type-master-class {
+  background: #4caf50;
+  color: #fff;
+}
+.evenement-description {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 0.9rem;
+  color: #ffffff;
+  font-style: italic;
+}
+.evenement-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 2px;
+}
+.evenement-info {
+  font-size: 0.85rem;
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.evenement-info strong {
+  color: #ffffff;
+  font-size: 1rem;
+}
+/* Message si aucun événement */
+.no-evenements {
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+}
+/* Responsive événements */
+@media (max-width: 768px) {
+  .evenement-item {
+    flex-direction: column;
+    align-items: center;
+  }
+  .evenement-date-block {
+    width: 100%;
+    max-width: 90px;
+  }
+  .evenement-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .evenement-infos {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
   }
 }
