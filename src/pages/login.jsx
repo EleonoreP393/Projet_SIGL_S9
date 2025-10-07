@@ -18,37 +18,32 @@ function Login() {
   };
 
   return (
+    <div className="login_body">
       <div className="login-container" style={{ maxWidth: "400px", margin: "50px auto" }}>
-        <div className="header-flex">
-          <h1>♫ Star ♫ Academy ♪</h1>
-          <div className="button-group">
-            <button type="button">Bouton 1</button>
-            <button type="button">Bouton 2</button>
-            <button type="button">Bouton 3</button>
-          </div>
-        </div>
+        <h1>♫ Star ♫ Academy ♪</h1>
         <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: "10px" }}>
-          <input
-            type="text"
-            value={username}
-            placeholder="Identifiant"
-            onChange={(e) => setUsername(e.target.value)}
-            style={{ width: "80%" }}
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            value={password}
-            placeholder="Mot de passe"
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "80%" }}
-          />
-        </div>
-        <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
-        <button type="submit">Se connecter ♪</button>
-      </form>
+          <div style={{ marginBottom: "10px" }}>
+            <input
+              type="text"
+              value={username}
+              placeholder="Identifiant"
+              onChange={(e) => setUsername(e.target.value)}
+              style={{ width: "80%" }}
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={password}
+              placeholder="Mot de passe"
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ width: "80%" }}
+            />
+          </div>
+          <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
+          <button type="submit">Se connecter ♪</button>
+        </form>
+      </div>
     </div>
   );
 }
