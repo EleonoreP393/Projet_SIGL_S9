@@ -193,3 +193,160 @@ input {
     display: flex;
     margin-bottom: 5px;
 }
+
+/* ====== Page Notifications: split list + détail ====== */
+/* Barre d'actions */
+.notif-toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 6px 0 14px 0;
+}
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background: #ffc421;
+  color: #000;
+}
+.btn-primary:hover {
+  background: #ffdd77;
+  transform: translateY(-1px);
+}
+/* Meta (liste et détail) */
+.notif-item-meta {
+  display: block;
+  margin-top: 6px;
+  color: #ffdd77;
+  font-size: 0.82rem;
+  opacity: 0.95;
+}
+.notif-detail-meta {
+  margin: 0 0 10px 0;
+  font-family: 'Georgia', serif;
+  color: #ffdd77;
+  font-size: 0.95rem;
+}
+
+.notifications-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.notifications-panel {
+  width: clamp(1000px, 90vw, 1600px);
+  min-height: 70vh;
+  background: #000; /* encadré noir */
+  border: 1px solid rgba(255, 196, 33, 0.25);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+.notifications-panel__title {
+  margin: 0 0 18px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.6rem;
+  color: #ffffff;
+}
+/* Layout split */
+.notifications-split {
+  display: flex;
+  gap: 18px;
+  min-height: 420px; /* assez haut pour scroller confortablement */
+}
+/* Liste (gauche) */
+.notif-list-pane {
+  width: 360px;
+  border-right: 1px solid rgba(255, 196, 33, 0.2);
+  padding-right: 12px;
+  overflow: auto;
+  max-height: 70vh; /* limite la hauteur pour scroller si besoin */
+}
+/* On réutilise .notifications-list + .notification-item existants.
+   On force .notification-item à être un bouton bloc pour l’accessibilité. */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.notification-item {
+  width: 100%;
+  text-align: left;
+  background: rgba(255, 196, 33, 0.1);
+  border: 1px solid #ffc421;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+/* État actif (sélectionné) */
+.notification-item.active {
+  background: rgba(255, 196, 33, 0.2);
+  border-color: #ffdd77;
+  box-shadow: 0 4px 12px rgba(255, 196, 33, 0.2);
+}
+.notification-item:hover {
+  background: rgba(255, 196, 33, 0.18);
+  border-color: #ffdd77;
+  transform: translateY(-1px);
+}
+/* Détail (droite) */
+.notif-detail-pane {
+  flex: 1;
+  min-width: 0;
+  padding-left: 4px;
+  overflow: auto;
+  max-height: 70vh;
+}
+.notif-detail-title {
+  margin: 0 0 8px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.2rem;
+  color: #ffc421;
+}
+.notif-detail-meta {
+  margin: 0 0 14px 0;
+  font-family: 'Georgia', serif;
+  color: #ffdd77;
+  font-size: 0.9rem;
+}
+.notif-detail-body {
+  background: transparent;
+  border: none;
+  padding: 20px;
+}
+.notif-detail-message {
+  margin: 0;
+  color: #fff;
+  line-height: 1.5;
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+}
+.notif-detail-empty {
+  color: #ffdd77;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  padding: 14px 0;
+}
+/* Empêche le texte de s'agrandir au survol dans la liste de gauche (page Notifications) */
+.notifications-page .notif-list-pane .notification-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notifications-page .notif-list-pane .notification-item:hover .notification-text,
+.notifications-page .notif-list-pane .notification-item:focus .notification-text {
+  white-space: nowrap;       /* reste sur une ligne */
+  overflow: hidden;          /* pas de débordement */
+  text-overflow: ellipsis;   /* ... si trop long */
+}
