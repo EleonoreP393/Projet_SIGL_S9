@@ -5,12 +5,31 @@ function Login() {
   // États pour stocker les valeurs des champs
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Fonction qui sera appelée au clic sur le bouton
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page
-    console.log("Identifiant:", username);
-    console.log("Mot de passe:", password);
+    setError("");
+    setLoading(true);
+
+    try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data?.success === false) {
+      throw new Error(data?.error || "Identifiants invalides");
+    }
+    alert("Connexion réussie !");
+  } catch (err) {
+    setError(err.message || "Erreur de connexion");
+  } finally {
+    setLoading(false);
+  }
 
     // Réinitialiser les champs
     setUsername("");
@@ -40,8 +59,13 @@ function Login() {
               style={{ width: "80%" }}
             />
           </div>
+
+          {error && (
+            <div style={{ color: "#ff6b6b", marginTop: 8 }}>{error}</div>
+          )}
+
           <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
-          <button type="submit">Se connecter ♪</button>
+          <button type="submit" disabled={loading}>{loading ? "Connexion..." : "Se connecter ♪"}</button>
         </form>
       </div>
     </div>
