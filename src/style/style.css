@@ -15,6 +15,46 @@ button {
 button:hover{
     border-color: rgb(211, 202, 101);
 }
+/* ===== Changemdp: forcer les champs en colonne ===== */
+.login_body .login-container.password-panel .password-form {
+  width: clamp(200px, 92vw, 80px);
+  display: grid;              /* empile proprement */
+  grid-template-columns: 1fr; /* une seule colonne */
+  gap: 14px;                  /* espace vertical entre champs */
+}
+.password-form .pw-label {
+  display: flex;              /* label + input en colonne */
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.password-form .pw-input-wrap {
+  position: relative;
+  display: block;             /* évite la mise côte à côte */
+  width: 100%;
+}
+.password-form .pw-input {
+  height: 28px;
+  display: block;
+  width: 100%;                /* prend toute la largeur du panneau */
+  box-sizing: border-box;     /* padding/border inclus */
+}
+.password-form .pw-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* Messages et bouton */
+.password-form .pw-hints { margin-top: 2px; }
+.password-form .pw-submit {
+  width: 100%;
+}
+/* Filets d'urgence si un parent force le flex en ligne */
+.password-form > * {
+  flex: 0 0 100%;             /* chaque enfant occupe 100% de largeur */
+  max-width: 100%;
+}
 
 /* ====== Page Login ====== */
 .login_body {

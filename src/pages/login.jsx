@@ -47,29 +47,17 @@ function Login() {
         <h1>♫ Star ♫ Academy ♪</h1>
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: "10px" }}>
-            <input
-              type="text"
-              value={username}
-              placeholder="Identifiant"
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: "80%" }}
-            />
+            <input type="text" value={username} placeholder="Identifiant" onChange={(e) => setUsername(e.target.value)} style={{ width: "80%" }}/>
           </div>
           <div>
-            <input
-              type="password"
-              value={password}
-              placeholder="Mot de passe"
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ width: "80%" }}
-            />
+            <input type="password" value={password} placeholder="Mot de passe" onChange={(e) => setPassword(e.target.value)} style={{ width: "80%" }}/>
           </div>
 
           {error && (
             <div style={{ color: "#ff6b6b", marginTop: 8 }}>{error}</div>
           )}
 
-          <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
+          <div className="forgot-password" role="button" tabIndex={0} onClick={() => navigate("/changemdp")} onKeyDown={(e) => e.key === "Enter" && navigate("/changemdp")}>Mot de passe oublié ?</div>
           <button type="submit" disabled={loading}>{loading ? "Connexion..." : "Se connecter ♪"}</button>
         </form>
       </div>

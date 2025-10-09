@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/home.jsx";
 import './App.css'
 import Login from './pages/login'
+import Changemdp from "./pages/changemdp.jsx";
 import JournalDeFormation from './pages/JournalDeFormation'
 import Notification from './pages/notification'
 
@@ -18,6 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/changemdp" element={<Changemdp />}/>
         <Route
           path="/"
           element={
