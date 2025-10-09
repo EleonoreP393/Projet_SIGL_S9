@@ -285,6 +285,43 @@ input {
     height: 52px;
   }
 }
+/* ====== Bouton Déconnexion (aligné à droite, même ligne que logo/bandeau) ====== */
+.logout-button {
+  position: fixed;
+  top: 40px;
+  right: 80px;                 /* symétrique avec le logo qui est left: 80px */
+  z-index: 10000;
+  background: #000;
+  color: #ffc421;
+  border: 1px solid #ffc421;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'Georgia', serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+.logout-button:hover,
+.logout-button:focus {
+  outline: none;
+  color: #000;
+  background: #ffc421;
+  border-color: #ffdd77;
+  transform: translateY(-1px);
+}
+/* Responsive: même logique que le logo/bandeau */
+@media (max-width: 600px) {
+  .logout-button {
+    top: 12px;
+    right: 12px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+}
+
 /* évite que le contenu passe sous le logo/bandeau (fixes) */
 .main-content {
   padding-top: 120px;

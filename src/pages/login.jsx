@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import '../style/style.css';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   // États pour stocker les valeurs des champs
@@ -7,6 +8,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // Fonction qui sera appelée au clic sur le bouton
   const handleLogin = async (e) => {
@@ -24,7 +26,10 @@ function Login() {
     if (!res.ok || data?.success === false) {
       throw new Error(data?.error || "Identifiants invalides");
     }
-    alert("Connexion réussie !");
+    // Marquer comme connecté
+    localStorage.setItem("auth", "1");
+    // Redirection vers la Home (route "/")
+    navigate("/", { replace: true });
   } catch (err) {
     setError(err.message || "Erreur de connexion");
   } finally {

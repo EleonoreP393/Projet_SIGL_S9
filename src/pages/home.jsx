@@ -87,6 +87,11 @@ function Home() {
     },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem("auth");
+    window.location.replace("/login");
+  };
+
   // Fonction pour calculer le statut automatiquement
   const getStatut = (dateOuverture, dateFermeture) => {
     const aujourdhui = new Date();
@@ -236,6 +241,14 @@ const newNotifications = notifications
           ))}
         </ul>
       </nav>
+      <button
+        type="button"
+        className="logout-button"
+        onClick={handleLogout}
+        aria-label="Se déconnecter"
+        title="Se déconnecter"
+      > Déconnexion </button>
+
       <main className="main-content">
         <section className="cards-grid">
           <article className="card card--coordonnees">
