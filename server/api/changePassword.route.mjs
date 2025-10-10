@@ -14,12 +14,12 @@ router.post("/changePassword", async (req, res) => {
         return res.status(400).json({success: false, error: "La confirmation du mot de passe est incorrecte"});
     }
 
-    const [rows] = await pool.query(
-      "UPDATE utilisateur set motDePasse = ? where email = ?",
+    const [result] = await pool.execute(
+      "UPDATE utilisateur SET motDePasse = ? WHERE email = ?",
       [password, email]
     );
-    if (rows.length === 0) {
-      return res.status(401).json({ success: false, error: "Email invalide" });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, error: "Email invalide" });
     }
 
     return res.json({success: true});
