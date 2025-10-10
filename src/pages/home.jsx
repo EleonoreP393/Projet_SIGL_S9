@@ -2,9 +2,10 @@ import React from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications", "Livret" ]; // labels du bandeau
+  const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications" ]; // labels du bandeau
 
   // Contacts (plus tard depuis BDD) - si null ou undefined, ne s'affiche pas
   const contacts = [
@@ -228,17 +229,18 @@ const newNotifications = notifications
     <>
       <header className="site-header" role="banner">
         <div className="header-inner">
-          <img src={logo} alt="Logo" className="site-logo" />
+          <Link to="/" className="logo-link">
+            <img src={logo} alt="Logo" className="site-logo" />
+          </Link>
         </div>
       </header>
 
       <nav className="topnav" aria-label="Navigation principale">
         <ul className="topnav-list">
-          {pages.map((label) => (
-            <li key={label} className="topnav-item">
-              <a href="#" className="topnav-link" onClick={(e) => e.preventDefault()} /* empêche la navigation */>{label}</a>
-            </li>
-          ))}
+          <li className="topnav-item"><Link to="/journal" className="topnav-link">Journal de Formation</Link></li>
+          <li className="topnav-item"><Link to="/evenements" className="topnav-link">Événements</Link></li>
+          <li className="topnav-item"><Link to="/documents" className="topnav-link">Documents</Link></li>
+          <li className="topnav-item"><Link to="/notifications" className="topnav-link">Notifications</Link></li>
         </ul>
       </nav>
       <button

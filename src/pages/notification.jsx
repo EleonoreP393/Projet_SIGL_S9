@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
+import { Link } from "react-router-dom";
 
 
 const READ_KEY = "readNotificationIds_v1";
@@ -28,7 +29,6 @@ function formatDateTimeFR(isoString) {
 
 
 function Notification(){
-    const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications", "Livret" ]; // labels du bandeau
     // IDs lus depuis localStorage
     const [readIds, setReadIds] = useState(() => loadReadIds());
     // État local des notifs (isNew recalculé en tenant compte des lus)
@@ -78,24 +78,37 @@ function Notification(){
         setList(prev => prev.map(n => ({ ...n, isNew: false })));
     };
 
+    const handleLogout = () => {
+      localStorage.removeItem("auth");
+      window.location.replace("/login");
+    };
+
 
     return (
         <>
           <header className="site-header" role="banner">
             <div className="header-inner">
-              <img src={logo} alt="Logo" className="site-logo" />
+              <Link to="/" className="logo-link">
+                <img src={logo} alt="Logo" className="site-logo" />
+              </Link>
             </div>
           </header>
     
           <nav className="topnav" aria-label="Navigation principale">
             <ul className="topnav-list">
-              {pages.map((label) => (
-                <li key={label} className="topnav-item">
-                  <a href="#" className="topnav-link" onClick={(e) => e.preventDefault()} /* empêche la navigation */>{label}</a>
-                </li>
-              ))}
+              <li className="topnav-item"><Link to="/journal" className="topnav-link">Journal de Formation</Link></li>
+              <li className="topnav-item"><Link to="/evenements" className="topnav-link">Événements</Link></li>
+              <li className="topnav-item"><Link to="/documents" className="topnav-link">Documents</Link></li>
+              <li className="topnav-item"><Link to="/notifications" className="topnav-link">Notifications</Link></li>
             </ul>
           </nav>
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+            aria-label="Se déconnecter"
+            title="Se déconnecter"
+          > Déconnexion </button>
           <main className="main-content">
             <section className="notifications-page">
               <div className="notifications-panel">
