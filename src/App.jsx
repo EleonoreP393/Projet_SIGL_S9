@@ -20,6 +20,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/changemdp" element={<Changemdp />}/>
+        <Route path="/notifications" element={<Notification />} />
+        <Route path="/journal" element={<JournalDeFormation />} />
         <Route
           path="/"
           element={
