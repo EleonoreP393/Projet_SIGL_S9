@@ -6,6 +6,7 @@ import Login from './pages/login'
 import Changemdp from "./pages/changemdp.jsx";
 import JournalDeFormation from './pages/JournalDeFormation'
 import Notification from './pages/notification'
+import Event from "./pages/event";
 
 
 function RequireAuth({ children }) {
@@ -22,6 +23,11 @@ function App() {
         <Route path="/changemdp" element={<Changemdp />}/>
         <Route path="/notifications" element={<Notification />} />
         <Route path="/journal" element={<JournalDeFormation />} />
+        <Route path="/evenements" element={
+          <RequireAuth>
+            <Event />
+          </RequireAuth>
+        } />
         <Route
           path="/"
           element={

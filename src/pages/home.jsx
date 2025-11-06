@@ -2,11 +2,10 @@ import React from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
+import { evenements } from "../data/evenements";
 import { Link } from "react-router-dom";
 
 function Home() {
-  const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications" ]; // labels du bandeau
-
   // Contacts (plus tard depuis BDD) - si null ou undefined, ne s'affiche pas
   const contacts = [
     {
@@ -130,64 +129,6 @@ function Home() {
       !form.signe && 
       (form.statut === 'ouvert' || form.statut === 'bientot_ferme')
     );
-
-  // Événements musicaux à venir (plus tard depuis BDD)
-const evenements = [
-  {
-    id: 1,
-    titre: "Scène Ouverte - Jazz & Blues",
-    date: "2025-10-08",
-    heure: "18:00",
-    lieu: "Salle de concert",
-    type: "Scène Ouverte",
-    description: "Venez jouer et partager vos morceaux préférés"
-  },
-  {
-    id: 2,
-    titre: "Atelier Improvisation Vocale",
-    date: "2025-10-12",
-    heure: "14:00",
-    lieu: "Studio A",
-    type: "Atelier",
-    description: "Atelier pratique ouvert à tous niveaux"
-  },
-  {
-    id: 3,
-    titre: "Audition Concert de Fin d'Année",
-    date: "2025-10-20",
-    heure: "16:00",
-    lieu: "Auditorium",
-    type: "Audition",
-    description: "Présentez votre morceau pour le concert annuel"
-  },
-  {
-    id: 4,
-    titre: "Jam Session - Rock",
-    date: "2025-10-05",
-    heure: "19:30",
-    lieu: "Salle de répétition B",
-    type: "Jam Session",
-    description: "Session collective, apportez vos instruments !"
-  },
-  {
-    id: 5,
-    titre: "Concert des Élèves",
-    date: "2025-10-25",
-    heure: "20:00",
-    lieu: "Auditorium Municipal",
-    type: "Concert",
-    description: "Présentez vos talents devant le public"
-  },
-  {
-    id: 6,
-    titre: "Master Class - Guitare Classique",
-    date: "2025-10-15",
-    heure: "17:00",
-    lieu: "Grande salle",
-    type: "Master Class",
-    description: "Avec le professeur Jean Dupuis"
-  },
-];
 
 // Filtre les événements à venir (pas encore passés)
 const evenementsAVenir = evenements

@@ -966,3 +966,117 @@ input {
     align-items: flex-start;
   }
 }
+
+/* ================================== */
+/*         PAGE ÉVÉNEMENTS DÉTAILLÉS    */
+/* ================================== */
+
+.events-page-container {
+  width: 100%;
+  max-width: 1200px; /* Limite la largeur sur grands écrans */
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.events-page-title {
+  font-family: 'Georgia', serif;
+  font-size: 2rem;
+  color: #000000;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Grille pour les encadrés noirs */
+.events-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Une colonne par défaut */
+  gap: 20px;
+}
+
+/* Sur écrans plus larges, on passe à 2 colonnes */
+@media (min-width: 900px) {
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* L'encadré noir pour chaque événement */
+.event-full-card {
+  background-color: #000;
+  border: 1px solid rgba(255, 196, 33, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espace entre les éléments internes */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.event-full-card:hover {
+  transform: translateY(-4px);
+  border-color: #ffc421;
+}
+
+/* Entête de la carte (titre + type) */
+.event-full-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.event-full-title {
+  font-family: 'Georgia', serif;
+  font-size: 1.4rem;
+  color: #ffc421;
+  margin: 0;
+}
+
+.event-full-type {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap; /* Empêche le badge de se casser */
+}
+
+/* Informations (date, heure, lieu) */
+.event-full-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.95rem;
+  color: #ffdd77;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 196, 33, 0.2);
+}
+
+/* Description détaillée */
+.event-full-description {
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #eee;
+  margin: 0;
+}
+
+.no-events-message {
+  color: #ffdd77;
+  font-style: italic;
+  text-align: center;
+  font-size: 1.1rem;
+  grid-column: 1 / -1; /* S'étend sur toutes les colonnes de la grille */
+}
+
+/* Réutilisation des couleurs des badges du Home */
+.type-scène-ouverte { background: #9c27b0; }
+.type-atelier { background: #2196f3; }
+.type-audition { background: #ff5722; }
+.type-jam-session { background: #ff9800; }
+.type-concert { background: #e91e63; }
+.type-master-class { background: #4caf50; }
