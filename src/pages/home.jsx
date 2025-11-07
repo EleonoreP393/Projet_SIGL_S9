@@ -114,9 +114,9 @@ function Home() {
   ];
   const Pages = [
     ...basePages,
-    { label: "Gestion Apprentis", path: "/gestion-apprentis" }, // La page en plus
+    { label: "Gestion", path: "/gestion" }, // La page en plus
   ];
-  const pagesToDisplay = userRole === 2 ? coordinateurPages : basePages;
+  const pagesToDisplay = userRole === 2 ? Pages : basePages;
 
   // Fonction pour calculer le statut automatiquement
   const getStatut = (dateOuverture, dateFermeture) => {
