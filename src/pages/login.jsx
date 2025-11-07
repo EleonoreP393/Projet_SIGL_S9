@@ -28,6 +28,9 @@ function Login() {
     }
     // Marquer comme connecté
     localStorage.setItem("auth", "1");
+    if (data.user) {
+      localStorage.setItem("user", JSON.stringify(data.user));
+    }
     // Redirection vers la Home (route "/")
     navigate("/", { replace: true });
   } catch (err) {

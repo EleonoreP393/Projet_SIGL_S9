@@ -11,14 +11,14 @@ router.post("/login", async (req, res) => {
     }
 
     const [rows] = await pool.query(
-      "SELECT idUtilisateur, nomUtilisateur, motDePasse FROM utilisateur WHERE nomUtilisateur = ? AND motDePasse = ?",
+      "SELECT idUtilisateur, nomUtilisateur, motDePasse, idRole FROM utilisateur WHERE nomUtilisateur = ? AND motDePasse = ?",
       [username, password]
     );
     if (rows.length === 0) {
       return res.status(401).json({ success: false, error: "Identifiants invalides" });
     }
 
-    return res.json({ success: true, user: { id: rows[0].id, username: rows[0].username } });
+    return res.json({ success: true, user: { id: rows[0].id, username: rows[0].username, role: rows[0].idRole } });
 } catch (e) {
     console.error(e);
     return res.status(500).json({ success: false, error: "Erreur serveur" });

@@ -3,9 +3,10 @@ import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
 import { evenements } from "../data/evenements";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
   // Contacts (plus tard depuis BDD) - si null ou undefined, ne s'affiche pas
   const contacts = [
     {
@@ -89,8 +90,33 @@ function Home() {
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
-    window.location.replace("/login");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
+
+  const getUser = () => {
+    try {
+      const userString = localStorage.getItem("user");
+      return userString ? JSON.parse(userString) : null;
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+      return null;
+    }
+  };
+  const currentUser = getUser();
+  const userRole = currentUser ? currentUser.role : null;
+
+  const basePages = [
+  { label: "Journal de Formation", path: "/journal" },
+  { label: "Documents", path: "/documents" },
+  { label: "Evénements", path: "/evenements" },
+  { label: "Notifications", path: "/notifications" },
+  ];
+  const Pages = [
+    ...basePages,
+    { label: "Gestion Apprentis", path: "/gestion-apprentis" }, // La page en plus
+  ];
+  const pagesToDisplay = userRole === 2 ? coordinateurPages : basePages;
 
   // Fonction pour calculer le statut automatiquement
   const getStatut = (dateOuverture, dateFermeture) => {
@@ -178,10 +204,13 @@ const newNotifications = notifications
 
       <nav className="topnav" aria-label="Navigation principale">
         <ul className="topnav-list">
-          <li className="topnav-item"><Link to="/journal" className="topnav-link">Journal de Formation</Link></li>
-          <li className="topnav-item"><Link to="/evenements" className="topnav-link">Événements</Link></li>
-          <li className="topnav-item"><Link to="/documents" className="topnav-link">Documents</Link></li>
-          <li className="topnav-item"><Link to="/notifications" className="topnav-link">Notifications</Link></li>
+          {pagesToDisplay.map((page) => (
+            <li key={page.path} className="topnav-item">
+              <Link to={page.path} className="topnav-link">
+                {page.label}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
       <button
