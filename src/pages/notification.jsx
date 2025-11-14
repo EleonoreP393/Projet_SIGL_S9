@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const READ_KEY = "readNotificationIds_v1";
@@ -28,7 +29,8 @@ function formatDateTimeFR(isoString) {
 
 
 function Notification(){
-    const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications", "Livret" ]; // labels du bandeau
+    const navigate = useNavigate();
+
     // IDs lus depuis localStorage
     const [readIds, setReadIds] = useState(() => loadReadIds());
     // État local des notifs (isNew recalculé en tenant compte des lus)
@@ -78,24 +80,64 @@ function Notification(){
         setList(prev => prev.map(n => ({ ...n, isNew: false })));
     };
 
+    const handleLogout = () => {
+      localStorage.removeItem("auth");
+      localStorage.removeItem("user");
+      navigate("/login");
+    };
+    const getUser = () => {
+    try {
+      const userString = localStorage.getItem("user");
+      return userString ? JSON.parse(userString) : null;
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+      return null;
+    }
+  };
+    const currentUser = getUser();
+    const userRole = currentUser ? currentUser.role : null;
+
+    const basePages = [
+      { label: "Journal de Formation", path: "/journal" },
+      { label: "Documents", path: "/documents" },
+      { label: "Evénements", path: "/evenements" },
+      { label: "Notifications", path: "/notifications" },
+    ];
+    const Pages = [
+      ...basePages,
+      { label: "Gestion", path: "/gestion" }, // La page en plus
+    ];
+    const pagesToDisplay = userRole === 2 ? Pages : basePages;
+
 
     return (
         <>
           <header className="site-header" role="banner">
             <div className="header-inner">
-              <img src={logo} alt="Logo" className="site-logo" />
+              <Link to="/" className="logo-link">
+                <img src={logo} alt="Logo" className="site-logo" />
+              </Link>
             </div>
           </header>
     
           <nav className="topnav" aria-label="Navigation principale">
             <ul className="topnav-list">
-              {pages.map((label) => (
-                <li key={label} className="topnav-item">
-                  <a href="#" className="topnav-link" onClick={(e) => e.preventDefault()} /* empêche la navigation */>{label}</a>
+              {pagesToDisplay.map((page) => (
+                <li key={page.path} className="topnav-item">
+                  <Link to={page.path} className="topnav-link">
+                    {page.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </nav>
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+            aria-label="Se déconnecter"
+            title="Se déconnecter"
+          > Déconnexion </button>
           <main className="main-content">
             <section className="notifications-page">
               <div className="notifications-panel">

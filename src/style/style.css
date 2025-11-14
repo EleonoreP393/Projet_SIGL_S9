@@ -15,6 +15,46 @@ button {
 button:hover{
     border-color: rgb(211, 202, 101);
 }
+/* ===== Changemdp: forcer les champs en colonne ===== */
+.login_body .login-container.password-panel .password-form {
+  width: clamp(200px, 92vw, 80px);
+  display: grid;              /* empile proprement */
+  grid-template-columns: 1fr; /* une seule colonne */
+  gap: 14px;                  /* espace vertical entre champs */
+}
+.password-form .pw-label {
+  display: flex;              /* label + input en colonne */
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.password-form .pw-input-wrap {
+  position: relative;
+  display: block;             /* évite la mise côte à côte */
+  width: 100%;
+}
+.password-form .pw-input {
+  height: 28px;
+  display: block;
+  width: 100%;                /* prend toute la largeur du panneau */
+  box-sizing: border-box;     /* padding/border inclus */
+}
+.password-form .pw-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* Messages et bouton */
+.password-form .pw-hints { margin-top: 2px; }
+.password-form .pw-submit {
+  width: 100%;
+}
+/* Filets d'urgence si un parent force le flex en ligne */
+.password-form > * {
+  flex: 0 0 100%;             /* chaque enfant occupe 100% de largeur */
+  max-width: 100%;
+}
 
 /* ====== Page Login ====== */
 .login_body {
@@ -285,6 +325,43 @@ input {
     height: 52px;
   }
 }
+/* ====== Bouton Déconnexion (aligné à droite, même ligne que logo/bandeau) ====== */
+.logout-button {
+  position: fixed;
+  top: 40px;
+  right: 80px;                 /* symétrique avec le logo qui est left: 80px */
+  z-index: 10000;
+  background: #000;
+  color: #ffc421;
+  border: 1px solid #ffc421;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'Georgia', serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+.logout-button:hover,
+.logout-button:focus {
+  outline: none;
+  color: #000;
+  background: #ffc421;
+  border-color: #ffdd77;
+  transform: translateY(-1px);
+}
+/* Responsive: même logique que le logo/bandeau */
+@media (max-width: 600px) {
+  .logout-button {
+    top: 12px;
+    right: 12px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+}
+
 /* évite que le contenu passe sous le logo/bandeau (fixes) */
 .main-content {
   padding-top: 120px;
@@ -888,4 +965,144 @@ input {
     gap: 8px;
     align-items: flex-start;
   }
+}
+
+/* ================================== */
+/*         PAGE ÉVÉNEMENTS DÉTAILLÉS    */
+/* ================================== */
+
+.events-page-container {
+  width: 100%;
+  max-width: 1200px; /* Limite la largeur sur grands écrans */
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.events-page-title {
+  font-family: 'Georgia', serif;
+  font-size: 2rem;
+  color: #000000;
+  margin-bottom: 24px;  
+}
+
+/* Grille pour les encadrés noirs */
+.events-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Une colonne par défaut */
+  gap: 20px;
+}
+
+/* Sur écrans plus larges, on passe à 2 colonnes */
+@media (min-width: 900px) {
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* L'encadré noir pour chaque événement */
+.event-full-card {
+  background-color: #000;
+  border: 1px solid rgba(255, 196, 33, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espace entre les éléments internes */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.event-full-card:hover {
+  transform: translateY(-4px);
+  border-color: #ffc421;
+}
+
+/* Entête de la carte (titre + type) */
+.event-full-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.event-full-title {
+  font-family: 'Georgia', serif;
+  font-size: 1.4rem;
+  color: #ffc421;
+  margin: 0;
+}
+
+.event-full-type {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap; /* Empêche le badge de se casser */
+}
+
+/* Informations (date, heure, lieu) */
+.event-full-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.95rem;
+  color: #ffdd77;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 196, 33, 0.2);
+}
+
+/* Description détaillée */
+.event-full-description {
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #eee;
+  margin: 0;
+}
+
+.no-events-message {
+  color: #ffdd77;
+  font-style: italic;
+  text-align: center;
+  font-size: 1.1rem;
+  grid-column: 1 / -1; /* S'étend sur toutes les colonnes de la grille */
+}
+
+/* Réutilisation des couleurs des badges du Home */
+.type-scène-ouverte { background: #9c27b0; }
+.type-atelier { background: #2196f3; }
+.type-audition { background: #ff5722; }
+.type-jam-session { background: #ff9800; }
+.type-concert { background: #e91e63; }
+.type-master-class { background: #4caf50; }
+
+.page-header-actions {
+  display: flex;
+  justify-content: center; /* Centre le titre */
+  align-items: center;
+  gap: 20px; 
+  margin-bottom: 24px;
+  width: 100%;
+}
+/* Bouton pour ajouter un événement */
+.add-event-button {
+  background-color: #000000;
+  color: #ffc421;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  margin-bottom: 24px;
+}
+.add-event-button:hover {
+  background-color: #ffdd77;
+  color: #000;
 }

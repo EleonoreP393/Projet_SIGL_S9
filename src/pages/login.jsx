@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import '../style/style.css';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   // États pour stocker les valeurs des champs
@@ -7,6 +8,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // Fonction qui sera appelée au clic sur le bouton
   const handleLogin = async (e) => {
@@ -24,7 +26,13 @@ function Login() {
     if (!res.ok || data?.success === false) {
       throw new Error(data?.error || "Identifiants invalides");
     }
-    alert("Connexion réussie !");
+    // Marquer comme connecté
+    localStorage.setItem("auth", "1");
+    if (data.user) {
+      localStorage.setItem("user", JSON.stringify(data.user));
+    }
+    // Redirection vers la Home (route "/")
+    navigate("/", { replace: true });
   } catch (err) {
     setError(err.message || "Erreur de connexion");
   } finally {
@@ -42,29 +50,17 @@ function Login() {
         <h1>♫ Star ♫ Academy ♪</h1>
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: "10px" }}>
-            <input
-              type="text"
-              value={username}
-              placeholder="Identifiant"
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: "80%" }}
-            />
+            <input type="text" value={username} placeholder="Identifiant" onChange={(e) => setUsername(e.target.value)} style={{ width: "80%" }}/>
           </div>
           <div>
-            <input
-              type="password"
-              value={password}
-              placeholder="Mot de passe"
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ width: "80%" }}
-            />
+            <input type="password" value={password} placeholder="Mot de passe" onChange={(e) => setPassword(e.target.value)} style={{ width: "80%" }}/>
           </div>
 
           {error && (
             <div style={{ color: "#ff6b6b", marginTop: 8 }}>{error}</div>
           )}
 
-          <div className="forgot-password" onClick={() => alert("Rediriger vers la page de récupération")}>Mot de passe oublié ?</div>
+          <div className="forgot-password" role="button" tabIndex={0} onClick={() => navigate("/changemdp")} onKeyDown={(e) => e.key === "Enter" && navigate("/changemdp")}>Mot de passe oublié ?</div>
           <button type="submit" disabled={loading}>{loading ? "Connexion..." : "Se connecter ♪"}</button>
         </form>
       </div>
