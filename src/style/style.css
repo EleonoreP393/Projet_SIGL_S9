@@ -1107,6 +1107,66 @@ input {
   color: #000;
 }
 
+/* Conteneur pour les boutons d'admin pour les aligner */
+.admin-actions {
+  display: flex;
+  margin-top: 30px;
+  gap: 10px; /* Espace entre les boutons "Ajouter" et "Supprimer" */
+}
+/* Style du bouton "Supprimer" */
+.delete-mode-button {
+  background-color: #000000;
+  color: #ffc421;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  margin-bottom: 24px;
+}
+.delete-mode-button:hover {
+  background-color: #ffdd77;
+  color: #000;
+}
+/* Barre de confirmation de suppression */
+.delete-confirmation-bar {
+  background-color: #ffc421;
+  color: #000;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.delete-confirmation-bar button {
+  background-color: #000000;
+  color: #ffc421;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+/* Style de la carte quand elle est en mode sélection */
+.event-full-card.selectable {
+  position: relative;
+  border: 2px dashed #ffc421;
+  cursor: pointer; /* Le curseur change pour indiquer que la carte est cliquable */
+}
+/* Style de la case à cocher */
+.event-selection-checkbox {
+  position: absolute; /* On la sort du flux normal */
+  top: 15px;
+  right: 15px;
+  width: 25px;
+  height: 25px;
+  pointer-events: none; /* Empêche de cliquer directement sur la case */
+}
+
 /* ================================== */
 /*         PAGE Gestion DÉTAILLÉS    */
 /* ================================== */
