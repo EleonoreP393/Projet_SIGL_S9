@@ -33,7 +33,7 @@ router.post("/searchAllCompte", async (req, res) => {
             "SELECT * FROM Utilisateur;"
         );
 
-        return res.json({success: true});
+        return res.json({success: true, utilisateurs: result});
 
     }catch(e){
         console.error(e);
@@ -86,3 +86,4 @@ router.post("/deleteCompte", async (req, res) => {
         return res.status(500).json({ success: false, error: "Erreur serveur" });
     }
 });
+export default router;

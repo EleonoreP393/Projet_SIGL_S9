@@ -1197,3 +1197,107 @@ input {
 .delete-user-btn:hover {
   color: #ff4747;
 }
+
+/* On ajuste le contenu du modal pour correspondre au thème */
+.modal-content {
+  background-color: #1a1a1a; /* Fond sombre */
+  color: #eee;
+  border: 1px solid rgba(255, 196, 33, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 600px; /* Un peu plus large */
+}
+.modal-content h2 {
+  color: #ffc421; /* Titre en doré */
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+/* On utilise Grid Layout pour le formulaire, c'est moderne et puissant */
+.modal-form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Deux colonnes de taille égale */
+  gap: 16px; /* Espace entre les champs */
+}
+/* Groupe contenant une étiquette et un champ de saisie */
+.form-group {
+  display: flex;
+  flex-direction: column; /* Étiquette au-dessus du champ */
+}
+/* Permet à un champ de prendre toute la largeur */
+.form-group-full {
+  grid-column: 1 / -1; /* S'étend de la première à la dernière colonne */
+}
+.form-group label {
+  font-family: 'Georgia', serif;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+/* Style des champs de saisie et de la liste déroulante */
+.modal-form input,
+.modal-form select {
+  background-color: #000;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: 'Georgia', serif;
+  transition: border-color 0.2s;
+}
+/* Quand on clique sur un champ, sa bordure devient dorée */
+.modal-form input:focus,
+.modal-form select:focus {
+  outline: none;
+  border-color: #ffc421;
+}
+/* Actions du modal (boutons) */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #333; /* Ligne de séparation */
+}
+/* Style générique pour les boutons du modal */
+.modal-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: transform 0.2s;
+}
+.modal-actions button:hover {
+  transform: scale(1.05);
+}
+/* Bouton principal (Sauvegarder) */
+.modal-actions .btn-primary {
+  background-color: #ffc421;
+  color: #000;
+}
+/* Bouton secondaire (Annuler) */
+.modal-actions .btn-secondary {
+  background-color: #333;
+  color: #eee;
+}
+
+.modal-overlay {
+  /* Positionnement par-dessus tout */
+  position: fixed; /* L'élément est positionné par rapport à la fenêtre du navigateur */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* Ces 4 lignes font qu'il couvre 100% de l'écran */
+  background-color: rgba(0, 0, 0, 0.75); /* Noir avec 75% d'opacité */
+  /*Centrer la boîte de dialogue au milieu de l'écran */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* S'assurer qu'il est au-dessus de tout le reste */
+  z-index: 1000; /* Un nombre élevé pour garantir qu'il est sur la couche supérieure */
+}

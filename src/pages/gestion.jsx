@@ -3,22 +3,24 @@ import "../style/style.css";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 
-// --- DONNÉES DE SIMULATION ---
-// On simule ici la réponse que donnerait votre API
-const initialFakeUsers = [
-  { idUtilisateur: 1, prenomUtilisateur: 'Jane', nomUtilisateur: 'j.doe', email: 'j.doe@example.com', roleName: 'Apprenti' },
-  { idUtilisateur: 2, prenomUtilisateur: 'John', nomUtilisateur: 'j.smith', email: 'j.smith@example.com', roleName: 'Tuteur' },
-  { idUtilisateur: 3, prenomUtilisateur: 'Marie', nomUtilisateur: 'm.dupont', email: 'm.dupont@example.com', roleName: 'Coordinatrice' },
-  { idUtilisateur: 4, prenomUtilisateur: 'Pierre', nomUtilisateur: 'p.martin', email: 'p.martin@example.com', roleName: 'Jury' },
-  { idUtilisateur: 5, prenomUtilisateur: 'Alice', nomUtilisateur: 'a.legrand', email: 'a.legrand@example.com', roleName: 'Apprenti' },
-  { idUtilisateur: 6, prenomUtilisateur: 'Sophie', nomUtilisateur: 's.petit', email: 's.petit@example.com', roleName: 'Tuteur' },
-];
+const roleIdToName = {
+    1: 'Apprenti',
+    2: 'Coordinatrice',
+    3: 'Tuteur',
+    4: 'Jury'
+};
+const roleNameToId = {
+    'Apprenti': 1,
+    'Coordinatrice': 2,
+    'Tuteur': 3,
+    'Jury': 4
+};
 
 function Gestion() {
   const navigate = useNavigate();
 
   // --- ÉTATS POUR LES DONNÉES ET L'AFFICHAGE ---
-  const [users, setUsers] = useState(initialFakeUsers);
+  const [users, setUsers] = useState([]);
   const [groupedUsers, setGroupedUsers] = useState({}); // Un objet pour stocker les utilisateurs groupés
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,40 +30,90 @@ function Gestion() {
   const [newUser, setNewUser] = useState({ prenomUtilisateur: '', nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' });
 
   // --- RÉCUPÉRATION ET GROUPEMENT DES DONNÉES ---
- useEffect(() => {
-    try {
-      const groups = users.reduce((acc, user) => {
-        const role = user.roleName || "Sans Rôle";
-        if (!acc[role]) acc[role] = [];
-        acc[role].push(user);
-        return acc;
-      }, {});
-      setGroupedUsers(groups);
-    } catch (err) {
-      setError("Erreur lors du groupement des données.");
-    } finally {
-      setLoading(false);
-    }
-  }, [users]); 
+  useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('/api/searchAllCompte', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    setUsers(data.utilisateurs || []); 
+                } else {
+                    throw new Error(data.error || "Impossible de charger les utilisateurs.");
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+  useEffect(() => {
+        const groups = users.reduce((acc, user) => {
+            // On traduit l'idRole en nom de rôle
+            const role = roleIdToName[user.idRole] || "Sans Rôle";
+            if (!acc[role]) acc[role] = [];
+            acc[role].push(user);
+            return acc;
+        }, {});
+        setGroupedUsers(groups);
+    }, [users]);
 
   // --- LOGIQUE POUR LES ACTIONS ---
-  const handleDeleteUser = (userIdToDelete) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce compte ?")) {
-      // On filtre la liste pour ne garder que les utilisateurs dont l'ID est différent
-      setUsers(currentUsers => currentUsers.filter(user => user.idUtilisateur !== userIdToDelete));
-    }
-  };
+  const handleDeleteUser = async (userIdToDelete) => {
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce compte ?")) {
+            try {
+                const response = await fetch(`/api/deleteCompte`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idUtilisateur: userIdToDelete }), 
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error);
+                // Si la suppression a réussi, on met à jour l'affichage
+                setUsers(currentUsers => currentUsers.filter(user => user.idUtilisateur !== userIdToDelete));
+            } catch (err) {
+                alert(`Erreur lors de la suppression: ${err.message}`);
+            }
+        }
+    };
+
   const handleAddUserChange = (e) => {
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
   };
-  const handleAddUserSubmit = (e) => {
-    e.preventDefault();
-    const newUserWithId = { ...newUser, idUtilisateur: Date.now() }; // ID unique simple
-    setUsers(currentUsers => [...currentUsers, newUserWithId]);
-    setIsAddModalOpen(false); // Ferme le modal
-    setNewUser({ prenomUtilisateur: '', nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' }); // Réinitialise le form
-  };
+
+  const handleAddUserSubmit = async (e) => {
+        e.preventDefault();
+        const userToCreate = {
+            prenomUtilisateur: newUser.prenomUtilisateur,
+            nomUtilisateur: newUser.nomUtilisateur,
+            email: newUser.email,
+            motDePasse: newUser.motDePasse,
+            idRole: roleNameToId[newUser.roleName]
+        };
+        try {
+            const response = await fetch('/api/createCompte', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userToCreate)
+            });
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error);
+            // On recharge la liste pour voir le nouvel utilisateur
+            setLoading(true);
+            const refreshResponse = await fetch('/api/searchAllCompte', { method: 'POST' });
+            const refreshData = await refreshResponse.json();
+            if (refreshData.success) setUsers(refreshData.utilisateurs || []);
+            setLoading(false);
+            setIsAddModalOpen(false);
+            setNewUser({ prenomUtilisateur: '', nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' });
+        } catch (err) {
+            alert(`Erreur lors de la création: ${err.message}`);
+        }
+    };
 
 
   // --- LOGIQUE DE NAVIGATION ---
@@ -159,19 +211,37 @@ function Gestion() {
           <div className="modal-content">
             <h2>Nouveau Compte</h2>
             <form onSubmit={handleAddUserSubmit} className="modal-form">
-              <input name="prenomUtilisateur" value={newUser.prenomUtilisateur} onChange={handleAddUserChange} placeholder="Prénom" required />
-              <input name="nomUtilisateur" value={newUser.nomUtilisateur} onChange={handleAddUserChange} placeholder="Login" required />
-              <input name="email" type="email" value={newUser.email} onChange={handleAddUserChange} placeholder="Email" required />
-              <input name="motDePasse" value={newUser.motDePasse} onChange={handleAddUserChange} placeholder="Mot de passe" required />
-              <select name="roleName" value={newUser.roleName} onChange={handleAddUserChange}>
-                <option>Apprenti</option>
-                <option>Tuteur</option>
-                <option>Coordinatrice</option>
-                <option>Jury</option>
-              </select>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="prenomUtilisateur">Prénom</label>
+                  <input id="prenomUtilisateur" name="prenomUtilisateur" value={newUser.prenomUtilisateur} onChange={handleAddUserChange} required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="nomUtilisateur">Login (nom d'utilisateur)</label>
+                  <input id="nomUtilisateur" name="nomUtilisateur" value={newUser.nomUtilisateur} onChange={handleAddUserChange} required />
+                </div>
+                <div className="form-group form-group-full">
+                  <label htmlFor="email">Email</label>
+                  <input id="email" name="email" type="email" value={newUser.email} onChange={handleAddUserChange} required />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="motDePasse">Mot de passe</label>
+                  <input id="motDePasse" name="motDePasse" type="password" value={newUser.motDePasse} onChange={handleAddUserChange} required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="roleName">Rôle</label>
+                  <select id="roleName" name="roleName" value={newUser.roleName} onChange={handleAddUserChange}>
+                    <option>Apprenti</option>
+                    <option>Tuteur</option>
+                    <option>Coordinatrice</option>
+                    <option>Jury</option>
+                  </select>
+                </div>
+              </div>
               <div className="modal-actions">
-                <button type="button" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
-                <button type="submit">Sauvegarder</button>
+                <button type="button" className="btn-secondary" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
+                <button type="submit" className="btn-primary">Sauvegarder</button>
               </div>
             </form>
           </div>
@@ -180,5 +250,4 @@ function Gestion() {
     </>
   )
 }
-
 export default Gestion;
