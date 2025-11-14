@@ -1155,11 +1155,16 @@ input {
 .user-details-card p strong {
   color: #ffdd77;
 }
-
+.gestion-page-title {
+  color: #000000;
+  margin-top: 30px;
+  padding-bottom: 10px;
+}
 /* Bouton principal "Ajouter un Compte" */
 .add-account-button {
-  background-color: #4caf50; /* Vert pour une action positive */
-  color: white;
+  background-color: #000000;
+  color: #ffc421;
+  margin-left: 30px;
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
@@ -1169,7 +1174,8 @@ input {
   transition: background-color 0.2s;
 }
 .add-account-button:hover {
-  background-color: #45a049;
+  background-color: #ffc421;
+  color: #000;
 }
 /* En-tête de la carte utilisateur pour aligner le login et le bouton supprimer */
 .user-card-header {

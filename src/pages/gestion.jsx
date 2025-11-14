@@ -5,15 +5,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 // --- DONNÉES DE SIMULATION ---
 // On simule ici la réponse que donnerait votre API
-const fakeApiUsers = [
-  { idUtilisateur: 1, nomUtilisateur: 'j.doe', email: 'j.doe@example.com', motDePasse: 'pass123', roleName: 'Apprenti' },
-  { idUtilisateur: 2, nomUtilisateur: 'j.smith', email: 'j.smith@example.com', motDePasse: 'secret', roleName: 'Tuteur' },
-  { idUtilisateur: 3, nomUtilisateur: 'm.dupont', email: 'm.dupont@example.com', motDePasse: 'admin', roleName: 'Coordinatrice' },
-  { idUtilisateur: 4, nomUtilisateur: 'p.martin', email: 'p.martin@example.com', motDePasse: 'jury_pass', roleName: 'Jury' },
-  { idUtilisateur: 5, nomUtilisateur: 'a.legrand', email: 'a.legrand@example.com', motDePasse: 'apprenti456', roleName: 'Apprenti' },
-  { idUtilisateur: 6, nomUtilisateur: 's.petit', email: 's.petit@example.com', motDePasse: 'tuteur789', roleName: 'Tuteur' },
+const initialFakeUsers = [
+  { idUtilisateur: 1, prenomUtilisateur: 'Jane', nomUtilisateur: 'j.doe', email: 'j.doe@example.com', roleName: 'Apprenti' },
+  { idUtilisateur: 2, prenomUtilisateur: 'John', nomUtilisateur: 'j.smith', email: 'j.smith@example.com', roleName: 'Tuteur' },
+  { idUtilisateur: 3, prenomUtilisateur: 'Marie', nomUtilisateur: 'm.dupont', email: 'm.dupont@example.com', roleName: 'Coordinatrice' },
+  { idUtilisateur: 4, prenomUtilisateur: 'Pierre', nomUtilisateur: 'p.martin', email: 'p.martin@example.com', roleName: 'Jury' },
+  { idUtilisateur: 5, prenomUtilisateur: 'Alice', nomUtilisateur: 'a.legrand', email: 'a.legrand@example.com', roleName: 'Apprenti' },
+  { idUtilisateur: 6, prenomUtilisateur: 'Sophie', nomUtilisateur: 's.petit', email: 's.petit@example.com', roleName: 'Tuteur' },
 ];
-// -----------------------------
 
 function Gestion() {
   const navigate = useNavigate();
@@ -61,7 +60,7 @@ function Gestion() {
     const newUserWithId = { ...newUser, idUtilisateur: Date.now() }; // ID unique simple
     setUsers(currentUsers => [...currentUsers, newUserWithId]);
     setIsAddModalOpen(false); // Ferme le modal
-    setNewUser({ nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' }); // Réinitialise le form
+    setNewUser({ prenomUtilisateur: '', nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' }); // Réinitialise le form
   };
 
 
@@ -126,7 +125,6 @@ function Gestion() {
 
       <main className="main-content">
         <section className="gestion-page-container">
-          <h1 className="gestion-page-title">Gestion des Comptes</h1>
           <div className="page-header-actions">
             <h1 className="gestion-page-title">Gestion des Comptes</h1>
             <button className="add-account-button" onClick={() => setIsAddModalOpen(true)}>
@@ -141,11 +139,11 @@ function Gestion() {
                   {groupedUsers[roleName].map(user => (
                     <div key={user.idUtilisateur} className="user-details-card">
                       <div className="user-card-header">
-                        <p><strong>Login:</strong> {user.nomUtilisateur}</p>
                         <button className="delete-user-btn" onClick={() => handleDeleteUser(user.idUtilisateur)}>
                           ✕
                         </button>
                       </div>
+                      <p><strong>Login:</strong> {user.nomUtilisateur}</p>
                       <p><strong>Email:</strong> {user.email}</p>
                       <p><strong>Mot de passe:</strong> ********</p>
                     </div>
@@ -161,6 +159,7 @@ function Gestion() {
           <div className="modal-content">
             <h2>Nouveau Compte</h2>
             <form onSubmit={handleAddUserSubmit} className="modal-form">
+              <input name="prenomUtilisateur" value={newUser.prenomUtilisateur} onChange={handleAddUserChange} placeholder="Prénom" required />
               <input name="nomUtilisateur" value={newUser.nomUtilisateur} onChange={handleAddUserChange} placeholder="Login" required />
               <input name="email" type="email" value={newUser.email} onChange={handleAddUserChange} placeholder="Email" required />
               <input name="motDePasse" value={newUser.motDePasse} onChange={handleAddUserChange} placeholder="Mot de passe" required />
