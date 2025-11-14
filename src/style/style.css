@@ -1106,3 +1106,258 @@ input {
   background-color: #ffdd77;
   color: #000;
 }
+
+/* Conteneur pour les boutons d'admin pour les aligner */
+.admin-actions {
+  display: flex;
+  margin-top: 30px;
+  gap: 10px; /* Espace entre les boutons "Ajouter" et "Supprimer" */
+}
+/* Style du bouton "Supprimer" */
+.delete-mode-button {
+  background-color: #000000;
+  color: #ffc421;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  margin-bottom: 24px;
+}
+.delete-mode-button:hover {
+  background-color: #ffdd77;
+  color: #000;
+}
+/* Barre de confirmation de suppression */
+.delete-confirmation-bar {
+  background-color: #ffc421;
+  color: #000;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.delete-confirmation-bar button {
+  background-color: #000000;
+  color: #ffc421;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+/* Style de la carte quand elle est en mode sélection */
+.event-full-card.selectable {
+  position: relative;
+  border: 2px dashed #ffc421;
+  cursor: pointer; /* Le curseur change pour indiquer que la carte est cliquable */
+}
+/* Style de la case à cocher */
+.event-selection-checkbox {
+  position: absolute; /* On la sort du flux normal */
+  top: 15px;
+  right: 15px;
+  width: 25px;
+  height: 25px;
+  pointer-events: none; /* Empêche de cliquer directement sur la case */
+}
+
+/* ================================== */
+/*         PAGE Gestion DÉTAILLÉS    */
+/* ================================== */
+
+/* Conteneur principal pour tous les groupes de rôles */
+.roles-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Espace entre les cartes */
+  justify-content: center; /* Centre les cartes horizontalement */
+}
+/* Style pour chaque "encadré" de rôle */
+.role-group-card {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 196, 33, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 300px; /* Largeur minimale pour chaque carte */
+  flex: 1; /* Permet aux cartes de grandir pour remplir l'espace */
+}
+.role-group-title {
+  color: #ffc421;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 196, 33, 0.4);
+  padding-bottom: 10px;
+  text-align: center;
+}
+/* Conteneur pour la liste des utilisateurs dans un rôle */
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Carte pour les détails d'un seul utilisateur */
+.user-details-card {
+  background-color: #000;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Georgia', serif;
+}
+.user-details-card p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #eee;
+}
+.user-details-card p strong {
+  color: #ffdd77;
+}
+.gestion-page-title {
+  color: #000000;
+  margin-top: 30px;
+  padding-bottom: 10px;
+}
+/* Bouton principal "Ajouter un Compte" */
+.add-account-button {
+  background-color: #000000;
+  color: #ffc421;
+  margin-left: 30px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: background-color 0.2s;
+}
+.add-account-button:hover {
+  background-color: #ffc421;
+  color: #000;
+}
+/* En-tête de la carte utilisateur pour aligner le login et le bouton supprimer */
+.user-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/* Petit bouton "Supprimer" (la croix) */
+.delete-user-btn {
+  background-color: transparent;
+  border: none;
+  color: #ff6b6b; /* Rouge pour une action de suppression */
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 5px;
+  line-height: 1;
+}
+.delete-user-btn:hover {
+  color: #ff4747;
+}
+
+/* On ajuste le contenu du modal pour correspondre au thème */
+.modal-content {
+  background-color: #1a1a1a; /* Fond sombre */
+  color: #eee;
+  border: 1px solid rgba(255, 196, 33, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 600px; /* Un peu plus large */
+}
+.modal-content h2 {
+  color: #ffc421; /* Titre en doré */
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+/* On utilise Grid Layout pour le formulaire, c'est moderne et puissant */
+.modal-form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Deux colonnes de taille égale */
+  gap: 16px; /* Espace entre les champs */
+}
+/* Groupe contenant une étiquette et un champ de saisie */
+.form-group {
+  display: flex;
+  flex-direction: column; /* Étiquette au-dessus du champ */
+}
+/* Permet à un champ de prendre toute la largeur */
+.form-group-full {
+  grid-column: 1 / -1; /* S'étend de la première à la dernière colonne */
+}
+.form-group label {
+  font-family: 'Georgia', serif;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+/* Style des champs de saisie et de la liste déroulante */
+.modal-form input,
+.modal-form select {
+  background-color: #000;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: 'Georgia', serif;
+  transition: border-color 0.2s;
+}
+/* Quand on clique sur un champ, sa bordure devient dorée */
+.modal-form input:focus,
+.modal-form select:focus {
+  outline: none;
+  border-color: #ffc421;
+}
+/* Actions du modal (boutons) */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #333; /* Ligne de séparation */
+}
+/* Style générique pour les boutons du modal */
+.modal-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: transform 0.2s;
+}
+.modal-actions button:hover {
+  transform: scale(1.05);
+}
+/* Bouton principal (Sauvegarder) */
+.modal-actions .btn-primary {
+  background-color: #ffc421;
+  color: #000;
+}
+/* Bouton secondaire (Annuler) */
+.modal-actions .btn-secondary {
+  background-color: #333;
+  color: #eee;
+}
+
+.modal-overlay {
+  /* Positionnement par-dessus tout */
+  position: fixed; /* L'élément est positionné par rapport à la fenêtre du navigateur */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* Ces 4 lignes font qu'il couvre 100% de l'écran */
+  background-color: rgba(0, 0, 0, 0.75); /* Noir avec 75% d'opacité */
+  /*Centrer la boîte de dialogue au milieu de l'écran */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* S'assurer qu'il est au-dessus de tout le reste */
+  z-index: 1000; /* Un nombre élevé pour garantir qu'il est sur la couche supérieure */
+}

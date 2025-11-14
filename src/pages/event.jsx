@@ -9,6 +9,8 @@ function Event() {
 
   // --- GESTION DES DONNÉES ET DES ÉTATS ---
   const [events, setEvents] = useState([]);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [selectedEvents, setSelectedEvents] = useState(new Set());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newEvent, setNewEvent] = useState({
     titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: ""
@@ -29,9 +31,25 @@ function Event() {
       }
     };
     // fetchEvents(); // Décommentez ceci quand votre route GET /api/evenements sera prête
-  }, []); // Le tableau vide signifie que cet effet ne se lance qu'une fois, au montage
+  }, []);
 
   // --- LOGIQUE DE NAVIGATION ET DE RÔLE ---
+  const handleSelectionChange = (eventId) => {
+  const newSelection = new Set(selectedEvents);
+    if (newSelection.has(eventId)) {
+      newSelection.delete(eventId);
+    } else {
+      newSelection.add(eventId);
+    }
+    setSelectedEvents(newSelection);
+  };
+  const handleDeleteSelected = () => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedEvents.size} événement(s) ?`)) {
+      setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.id)));
+      setIsDeleteMode(false);
+      setSelectedEvents(new Set());
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
@@ -135,28 +153,59 @@ function Event() {
 
       <main className="main-content">
         <section className="events-page-container">
-          <h1 className="events-page-title">Prochains Événements & Ateliers</h1>
-          {userRole === 2 && (
-            <button className="add-event-button" onClick={() => setIsModalOpen(true)}>Ajouter</button>
+          {/* On groupe le titre et les boutons pour un meilleur alignement */}
+          <div className="page-header-actions">
+            <h1 className="events-page-title">Prochains Événements & Ateliers</h1>
+            {/* Conteneur pour les boutons d'administration */}
+            {userRole === 2 && (
+              <div className="admin-actions">
+                <button className="add-event-button" onClick={() => setIsModalOpen(true)}>Ajouter</button>
+                <button className="delete-mode-button" onClick={() => { setIsDeleteMode(!isDeleteMode); setSelectedEvents(new Set());}}>
+                  {isDeleteMode ? 'Annuler' : 'Supprimer'}
+                </button>
+              </div>
+            )}
+          </div>
+          {/* --- BARRE DE CONFIRMATION --- */}
+          {/* Ne s'affiche que si on est en mode suppression ET qu'au moins 1 élément est coché */}
+          {isDeleteMode && selectedEvents.size > 0 && (
+            <div className="delete-confirmation-bar">
+              <span>{selectedEvents.size} événement(s) sélectionné(s)</span>
+              <button onClick={handleDeleteSelected}>Confirmer la Suppression</button>
+            </div>
           )}
-          
           <div className="events-grid">
             {evenementsAVenir.length > 0 ? (
               evenementsAVenir.map((event) => (
-                <article key={event.id} className="event-full-card">
+
+                // On ajoute une classe 'selectable' et un écouteur de clic sur la carte entière
+                <article 
+                  key={event.id} 
+                  className={`event-full-card ${isDeleteMode ? 'selectable' : ''}`}
+                  onClick={() => isDeleteMode && handleSelectionChange(event.id)} // Permet de cliquer sur la carte pour cocher
+                >
+
+                  {/* --- CASE À COCHER --- */}
+                  {/* Ne s'affiche qu'en mode suppression */}
+                  {isDeleteMode && (
+                    <input
+                      type="checkbox"
+                      className="event-selection-checkbox"
+                      checked={selectedEvents.has(event.id)}
+                      readOnly // On la met en lecture seule car le clic est géré par la carte
+                    />
+                  )}
                   <div className="event-full-header">
                     <h2 className="event-full-title">{event.titre}</h2>
                     <span className={`event-full-type type-${event.type.toLowerCase().replace(/\s+/g, '-')}`}>
                       {event.type}
                     </span>
                   </div>
-                  
                   <div className="event-full-infos">
                     <span>📅 {formatDateComplete(event.date)}</span>
                     <span>🕐 {event.heure}</span>
                     <span>📍 {event.lieu}</span>
                   </div>
-                  
                   <p className="event-full-description">{event.description}</p>
                 </article>
               ))
