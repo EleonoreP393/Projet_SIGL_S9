@@ -16,6 +16,7 @@ export const pool = mysql.createPool({
 // 2) Importe les routes APRÈS l'export du pool
 import loginRouter from "./api/login.route.mjs";
 import changePasswordRouter from "./api/changePassword.route.mjs";
+import compteRouter from "./api/compte.route.mjs";
 
 const app = express();
 app.use(express.json());
@@ -24,6 +25,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 // 3) Monte les routes
 app.use("/api", loginRouter);
 app.use("/api", changePasswordRouter);
+app.use("/api", compteRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
