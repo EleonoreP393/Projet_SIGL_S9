@@ -2,10 +2,10 @@ import React from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-// Ce composant est un placeholder pour votre future page de gestion.
+
 function Gestion() {
   const navigate = useNavigate();
-  // --- On réutilise la même barre de navigation que sur les autres pages ---
+
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("user");
@@ -33,10 +33,9 @@ function Gestion() {
     { label: "Gestion", path: "/gestion" },
   ];
   const pagesToDisplay = userRole === 2 ? coordinateurPages : basePages;
-  // --- Fin de la logique de navigation ---
+
   return (
     <>
-      {/* Barre de navigation réutilisée */}
       <header className="site-header" role="banner">
         <div className="header-inner">
           <Link to="/" className="logo-link">

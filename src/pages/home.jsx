@@ -223,21 +223,23 @@ const newNotifications = notifications
 
       <main className="main-content">
         <section className="cards-grid">
-          <article className="card card--coordonnees">
-            <h2 className="card-title">Coordonnées</h2>
-            <div className="contacts-container">
-              {contacts.map((contact) => (
-                <div key={contact.id} className="contact-card">
-                  <h3 className="contact-role">{contact.role}</h3>
-                  <ul className="contact-details">
-                    <li><strong>Nom:</strong> {contact.nom}</li>
-                    <li><strong>Téléphone:</strong> {contact.telephone}</li>
-                    <li><strong>Email:</strong> {contact.email}</li>
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </article>
+          {userRole !== 2 && (
+            <article className="card card--coordonnees">
+              <h2 className="card-title">Coordonnées</h2>
+              <div className="contacts-container">
+                {contacts.map((contact) => (
+                  <div key={contact.id} className="contact-card">
+                    <h3 className="contact-role">{contact.role}</h3>
+                    <ul className="contact-details">
+                      <li><strong>Nom:</strong> {contact.nom}</li>
+                      <li><strong>Téléphone:</strong> {contact.telephone}</li>
+                      <li><strong>Email:</strong> {contact.email}</li>
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </article>
+          )}
 
           <article className="card card--formulaires">
             <h2 className="card-title">Formulaires à compléter</h2>
