@@ -217,7 +217,7 @@ function Gestion() {
                   <input id="prenomUtilisateur" name="prenomUtilisateur" value={newUser.prenomUtilisateur} onChange={handleAddUserChange} required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="nomUtilisateur">Login (nom d'utilisateur)</label>
+                  <label htmlFor="nomUtilisateur">Nom (Login)</label>
                   <input id="nomUtilisateur" name="nomUtilisateur" value={newUser.nomUtilisateur} onChange={handleAddUserChange} required />
                 </div>
                 <div className="form-group form-group-full">
