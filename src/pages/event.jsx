@@ -1,53 +1,89 @@
 import React, { useState, useEffect } from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
-import { evenements } from "../data/evenements";
 import { Link, useNavigate } from "react-router-dom";
 
 function Event() {
   const navigate = useNavigate();
 
-  // --- GESTION DES DONNÉES ET DES ÉTATS ---
-  const [events, setEvents] = useState([]);
+  // --- ÉTATS ---
+  const [events, setEvents] = useState([]); // liste vide
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // États pour le mode de suppression
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState(new Set());
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // L'état du formulaire correspond aux champs du frontend
   const [newEvent, setNewEvent] = useState({
     titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: ""
   });
-  const [error, setError] = useState(""); // Pour afficher les erreurs du formulaire
+  const [error, setError] = useState("");
 
-  // --- RÉCUPÉRATION DES ÉVÉNEMENTS DEPUIS L'API AU CHARGEMENT ---
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch("/api/evenements"); // Assurez-vous d'avoir une route GET
-        const data = await response.json();
-        if (data.success) {
-          setEvents(data.evenements);
-        }
-      } catch (err) {
-        console.error("Impossible de charger les événements:", err);
+  // --- useEffect pour appeler l'API au chargement ---
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch("/api/searchAllEvenement", { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        setEvents(data.evenements || []);
+      } else {
+        throw new Error(data.error || "Erreur chargement événements.");
       }
-    };
-    // fetchEvents(); // Décommentez ceci quand votre route GET /api/evenements sera prête
+    } catch (err) {
+      console.error("Impossible de charger les événements:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
   }, []);
 
   // --- LOGIQUE DE NAVIGATION ET DE RÔLE ---
-  const handleSelectionChange = (eventId) => {
-  const newSelection = new Set(selectedEvents);
-    if (newSelection.has(eventId)) {
-      newSelection.delete(eventId);
-    } else {
-      newSelection.add(eventId);
+  const handleAddEvent = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      const response = await fetch("/api/createEvenement", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEvent), // Envoie l'état du formulaire tel quel
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Erreur création.");
+      // Après succès, on rafraîchit la liste des événements
+      await fetchEvents(); 
+      
+      setIsModalOpen(false);
+      setNewEvent({ titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: "" });
+    } catch (err) {
+      setError(err.message);
     }
-    setSelectedEvents(newSelection);
   };
-  const handleDeleteSelected = () => {
+
+  const handleDeleteSelected = async () => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedEvents.size} événement(s) ?`)) {
-      setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.id)));
-      setIsDeleteMode(false);
-      setSelectedEvents(new Set());
+      try {
+        // On exécute toutes les suppressions en parallèle pour plus d'efficacité
+        const deletePromises = Array.from(selectedEvents).map(id =>
+          fetch("/api/deleteEvenement", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idEvenement: id }),
+          }).then(res => res.json())
+        );
+        const results = await Promise.all(deletePromises);
+        // On vérifie si une des suppressions a échoué
+        if (results.some(res => !res.success)) {
+          throw new Error("Certaines suppressions ont échoué.");
+        }
+        // Si tout réussit, on met à jour l'état local
+        setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.id)));
+        setIsDeleteMode(false);
+        setSelectedEvents(new Set());
+      } catch (err) {
+        alert(err.message);
+      }
     }
   };
 
@@ -87,32 +123,8 @@ function Event() {
     const { name, value } = e.target;
     setNewEvent(prev => ({ ...prev, [name]: value }));
   };
-  const handleAddEvent = async (e) => {
-    e.preventDefault();
-    setError(""); // Réinitialise les erreurs
-    try {
-      const response = await fetch("/api/evenements", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEvent),
-      });
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.error || "Une erreur est survenue.");
-      }
-      // Ajoute le nouvel événement à la liste pour une mise à jour instantanée
-      // L'idéal est de récupérer l'événement complet renvoyé par l'API
-      setEvents(prevEvents => [...prevEvents, { ...newEvent, id: data.insertedId }]);
-      
-      // Ferme le modal et réinitialise le formulaire
-      setIsModalOpen(false);
-      setNewEvent({ titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: "" });
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
-  const evenementsAVenir = evenements
+  const evenementsAVenir = events
     .filter(event => {
       const eventDate = new Date(event.date);
       const aujourdhui = new Date();

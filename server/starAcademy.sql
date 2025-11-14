@@ -325,15 +325,12 @@ DROP TABLE IF EXISTS `evenement`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `evenement` (
   `idEvenement` int NOT NULL AUTO_INCREMENT,
-  `idOrganisateur` int DEFAULT NULL,
   `nom` varchar(200) DEFAULT NULL,
-  `nomImage` varchar(500) DEFAULT NULL,
   `description` varchar(2000) DEFAULT NULL,
   `lieu` varchar(100) DEFAULT NULL,
-  `dateEvement` date DEFAULT NULL,
-  PRIMARY KEY (`idEvenement`),
-  KEY `idOrganisateur` (`idOrganisateur`),
-  CONSTRAINT `evenement_ibfk_1` FOREIGN KEY (`idOrganisateur`) REFERENCES `utilisateur` (`idUtilisateur`)
+  `dateEvenement` date DEFAULT NULL,
+  `typeEvenement` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`idEvenement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -595,7 +592,7 @@ CREATE TABLE `utilisateur` (
   `motDePasse` varchar(100) DEFAULT NULL,
   `idRole` int DEFAULT NULL,
   PRIMARY KEY (`idUtilisateur`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -604,6 +601,7 @@ CREATE TABLE `utilisateur` (
 
 LOCK TABLES `utilisateur` WRITE;
 /*!40000 ALTER TABLE `utilisateur` DISABLE KEYS */;
+INSERT INTO `utilisateur` VALUES (1,'Test','Testo','test@test.fr','testpwd',2);
 /*!40000 ALTER TABLE `utilisateur` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -616,4 +614,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-02 16:30:37
+-- Dump completed on 2025-11-14 14:35:55
