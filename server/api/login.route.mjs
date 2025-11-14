@@ -18,7 +18,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ success: false, error: "Identifiants invalides" });
     }
 
-    return res.json({ success: true, user: { id: rows[0].id, username: rows[0].username, role: rows[0].idRole } });
+    return res.json({ success: true, user: { id: rows[0].idUtilisateur, username: rows[0].nomUtilisateur, role: rows[0].idRole } });
 } catch (e) {
     console.error(e);
     return res.status(500).json({ success: false, error: "Erreur serveur" });
