@@ -2,11 +2,11 @@ import React from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
-import { Link } from "react-router-dom";
+import { evenements } from "../data/evenements";
+import { Link, useNavigate } from "react-router-dom";
 
 function Home() {
-  const pages = ["Journal de Formation", "Documents", "Evénements", "Notifications" ]; // labels du bandeau
-
+  const navigate = useNavigate();
   // Contacts (plus tard depuis BDD) - si null ou undefined, ne s'affiche pas
   const contacts = [
     {
@@ -90,8 +90,33 @@ function Home() {
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
-    window.location.replace("/login");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
+
+  const getUser = () => {
+    try {
+      const userString = localStorage.getItem("user");
+      return userString ? JSON.parse(userString) : null;
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+      return null;
+    }
+  };
+  const currentUser = getUser();
+  const userRole = currentUser ? currentUser.role : null;
+
+  const basePages = [
+  { label: "Journal de Formation", path: "/journal" },
+  { label: "Documents", path: "/documents" },
+  { label: "Evénements", path: "/evenements" },
+  { label: "Notifications", path: "/notifications" },
+  ];
+  const Pages = [
+    ...basePages,
+    { label: "Gestion", path: "/gestion" }, // La page en plus
+  ];
+  const pagesToDisplay = userRole === 2 ? Pages : basePages;
 
   // Fonction pour calculer le statut automatiquement
   const getStatut = (dateOuverture, dateFermeture) => {
@@ -130,64 +155,6 @@ function Home() {
       !form.signe && 
       (form.statut === 'ouvert' || form.statut === 'bientot_ferme')
     );
-
-  // Événements musicaux à venir (plus tard depuis BDD)
-const evenements = [
-  {
-    id: 1,
-    titre: "Scène Ouverte - Jazz & Blues",
-    date: "2025-10-08",
-    heure: "18:00",
-    lieu: "Salle de concert",
-    type: "Scène Ouverte",
-    description: "Venez jouer et partager vos morceaux préférés"
-  },
-  {
-    id: 2,
-    titre: "Atelier Improvisation Vocale",
-    date: "2025-10-12",
-    heure: "14:00",
-    lieu: "Studio A",
-    type: "Atelier",
-    description: "Atelier pratique ouvert à tous niveaux"
-  },
-  {
-    id: 3,
-    titre: "Audition Concert de Fin d'Année",
-    date: "2025-10-20",
-    heure: "16:00",
-    lieu: "Auditorium",
-    type: "Audition",
-    description: "Présentez votre morceau pour le concert annuel"
-  },
-  {
-    id: 4,
-    titre: "Jam Session - Rock",
-    date: "2025-10-05",
-    heure: "19:30",
-    lieu: "Salle de répétition B",
-    type: "Jam Session",
-    description: "Session collective, apportez vos instruments !"
-  },
-  {
-    id: 5,
-    titre: "Concert des Élèves",
-    date: "2025-10-25",
-    heure: "20:00",
-    lieu: "Auditorium Municipal",
-    type: "Concert",
-    description: "Présentez vos talents devant le public"
-  },
-  {
-    id: 6,
-    titre: "Master Class - Guitare Classique",
-    date: "2025-10-15",
-    heure: "17:00",
-    lieu: "Grande salle",
-    type: "Master Class",
-    description: "Avec le professeur Jean Dupuis"
-  },
-];
 
 // Filtre les événements à venir (pas encore passés)
 const evenementsAVenir = evenements
@@ -237,10 +204,13 @@ const newNotifications = notifications
 
       <nav className="topnav" aria-label="Navigation principale">
         <ul className="topnav-list">
-          <li className="topnav-item"><Link to="/journal" className="topnav-link">Journal de Formation</Link></li>
-          <li className="topnav-item"><Link to="/evenements" className="topnav-link">Événements</Link></li>
-          <li className="topnav-item"><Link to="/documents" className="topnav-link">Documents</Link></li>
-          <li className="topnav-item"><Link to="/notifications" className="topnav-link">Notifications</Link></li>
+          {pagesToDisplay.map((page) => (
+            <li key={page.path} className="topnav-item">
+              <Link to={page.path} className="topnav-link">
+                {page.label}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
       <button
@@ -253,21 +223,23 @@ const newNotifications = notifications
 
       <main className="main-content">
         <section className="cards-grid">
-          <article className="card card--coordonnees">
-            <h2 className="card-title">Coordonnées</h2>
-            <div className="contacts-container">
-              {contacts.map((contact) => (
-                <div key={contact.id} className="contact-card">
-                  <h3 className="contact-role">{contact.role}</h3>
-                  <ul className="contact-details">
-                    <li><strong>Nom:</strong> {contact.nom}</li>
-                    <li><strong>Téléphone:</strong> {contact.telephone}</li>
-                    <li><strong>Email:</strong> {contact.email}</li>
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </article>
+          {userRole !== 2 && (
+            <article className="card card--coordonnees">
+              <h2 className="card-title">Coordonnées</h2>
+              <div className="contacts-container">
+                {contacts.map((contact) => (
+                  <div key={contact.id} className="contact-card">
+                    <h3 className="contact-role">{contact.role}</h3>
+                    <ul className="contact-details">
+                      <li><strong>Nom:</strong> {contact.nom}</li>
+                      <li><strong>Téléphone:</strong> {contact.telephone}</li>
+                      <li><strong>Email:</strong> {contact.email}</li>
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </article>
+          )}
 
           <article className="card card--formulaires">
             <h2 className="card-title">Formulaires à compléter</h2>
