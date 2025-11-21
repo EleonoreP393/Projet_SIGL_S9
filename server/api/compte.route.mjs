@@ -12,7 +12,7 @@ router.post("/createCompte", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO utilisateur (nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole) VALUES ('" + nomUtilisateur + "', '" + prenomUtilisateur + "', '" + email + "', '" + motDePasse + "', " + idRole + ");"
+            "INSERT INTO utilisateur (nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole) VALUES (?,?,?,?,?)", [nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création du compte." });

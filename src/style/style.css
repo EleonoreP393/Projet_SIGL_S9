@@ -986,6 +986,21 @@ input {
   margin-bottom: 24px;  
 }
 
+.event-full-description {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+.event-full-card {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.events-grid {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 /* Grille pour les encadrés noirs */
 .events-grid {
   display: grid;

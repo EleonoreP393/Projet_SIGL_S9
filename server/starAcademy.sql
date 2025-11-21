@@ -46,6 +46,7 @@ CREATE TABLE `apprenti` (
 
 LOCK TABLES `apprenti` WRITE;
 /*!40000 ALTER TABLE `apprenti` DISABLE KEYS */;
+INSERT INTO `apprenti` VALUES (1,1,1,1,1,1);
 /*!40000 ALTER TABLE `apprenti` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -304,7 +305,7 @@ CREATE TABLE `entreprise` (
   `siret` varchar(50) DEFAULT NULL,
   `adresse` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`idEntreprise`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -313,6 +314,7 @@ CREATE TABLE `entreprise` (
 
 LOCK TABLES `entreprise` WRITE;
 /*!40000 ALTER TABLE `entreprise` DISABLE KEYS */;
+INSERT INTO `entreprise` VALUES (1,'Test',NULL,NULL);
 /*!40000 ALTER TABLE `entreprise` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -330,8 +332,10 @@ CREATE TABLE `evenement` (
   `lieu` varchar(100) DEFAULT NULL,
   `dateEvenement` date DEFAULT NULL,
   `typeEvenement` varchar(50) DEFAULT NULL,
+  `heure` int DEFAULT NULL,
+  `minutes` int DEFAULT NULL,
   PRIMARY KEY (`idEvenement`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -340,7 +344,32 @@ CREATE TABLE `evenement` (
 
 LOCK TABLES `evenement` WRITE;
 /*!40000 ALTER TABLE `evenement` DISABLE KEYS */;
+INSERT INTO `evenement` VALUES (1,'Test','Test','Test','2018-09-24','Test',NULL,NULL),(2,'Test','Test','Test','2018-09-24','Test',NULL,NULL),(3,'Test','Test','Test','2018-09-24','Test',12,9);
 /*!40000 ALTER TABLE `evenement` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `jury`
+--
+
+DROP TABLE IF EXISTS `jury`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `jury` (
+  `idUtilisateur` int NOT NULL,
+  KEY `idUtilisateur_idx` (`idUtilisateur`),
+  CONSTRAINT `idUtilisateur` FOREIGN KEY (`idUtilisateur`) REFERENCES `utilisateur` (`idUtilisateur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `jury`
+--
+
+LOCK TABLES `jury` WRITE;
+/*!40000 ALTER TABLE `jury` DISABLE KEYS */;
+INSERT INTO `jury` VALUES (1);
+/*!40000 ALTER TABLE `jury` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -392,6 +421,7 @@ CREATE TABLE `maitreapprentissage` (
 
 LOCK TABLES `maitreapprentissage` WRITE;
 /*!40000 ALTER TABLE `maitreapprentissage` DISABLE KEYS */;
+INSERT INTO `maitreapprentissage` VALUES (1,1);
 /*!40000 ALTER TABLE `maitreapprentissage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -539,7 +569,7 @@ CREATE TABLE `promotion` (
   PRIMARY KEY (`idPromotion`),
   KEY `idEcole` (`idEcole`),
   CONSTRAINT `promotion_ibfk_1` FOREIGN KEY (`idEcole`) REFERENCES `ecole` (`idEcole`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -548,6 +578,7 @@ CREATE TABLE `promotion` (
 
 LOCK TABLES `promotion` WRITE;
 /*!40000 ALTER TABLE `promotion` DISABLE KEYS */;
+INSERT INTO `promotion` VALUES (1,'Test',2020,NULL);
 /*!40000 ALTER TABLE `promotion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -575,6 +606,31 @@ CREATE TABLE `referententreprise` (
 LOCK TABLES `referententreprise` WRITE;
 /*!40000 ALTER TABLE `referententreprise` DISABLE KEYS */;
 /*!40000 ALTER TABLE `referententreprise` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tuteur`
+--
+
+DROP TABLE IF EXISTS `tuteur`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tuteur` (
+  `idUtilisateur` int NOT NULL,
+  KEY `idUtilisateur_idx` (`idUtilisateur`),
+  KEY `idUtilisateur_tuteur_idx` (`idUtilisateur`),
+  CONSTRAINT `idUtilisateur_Tuteur` FOREIGN KEY (`idUtilisateur`) REFERENCES `utilisateur` (`idUtilisateur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tuteur`
+--
+
+LOCK TABLES `tuteur` WRITE;
+/*!40000 ALTER TABLE `tuteur` DISABLE KEYS */;
+INSERT INTO `tuteur` VALUES (1);
+/*!40000 ALTER TABLE `tuteur` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -614,4 +670,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-14 14:35:55
+-- Dump completed on 2025-11-21  9:38:37

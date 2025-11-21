@@ -43,22 +43,32 @@ function Event() {
   const handleAddEvent = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      const response = await fetch("/api/createEvenement", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEvent), // Envoie l'état du formulaire tel quel
-      });
-      const data = await response.json();
-      if (!data.success) throw new Error(data.error || "Erreur création.");
-      // Après succès, on rafraîchit la liste des événements
-      await fetchEvents(); 
-      
-      setIsModalOpen(false);
-      setNewEvent({ titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: "" });
-    } catch (err) {
-      setError(err.message);
-    }
+      const [heureStr, minutesStr] = newEvent.heure.split(":");
+    // Crée l'objet que le backend attend :
+    const eventToSend = {
+      nom: newEvent.titre,
+      description: newEvent.description,
+      lieu: newEvent.lieu,
+      dateEvenement: newEvent.date,
+      typeEvenement: newEvent.type,
+      heure: parseInt(heureStr, 10),
+      minutes: parseInt(minutesStr, 10)
+    };
+    const response = await fetch("/api/createEvenement", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventToSend),
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Erreur création.");
+    await fetchEvents();
+    setIsModalOpen(false);
+    setNewEvent({ titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: "" });
+  } catch (err) {
+    setError(err.message);
+  }
   };
 
   const handleDeleteSelected = async () => {
@@ -78,7 +88,7 @@ function Event() {
           throw new Error("Certaines suppressions ont échoué.");
         }
         // Si tout réussit, on met à jour l'état local
-        setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.id)));
+        setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.idEvenement)));
         setIsDeleteMode(false);
         setSelectedEvents(new Set());
       } catch (err) {
@@ -126,17 +136,29 @@ function Event() {
 
   const evenementsAVenir = events
     .filter(event => {
-      const eventDate = new Date(event.date);
+      const eventDate = new Date(event.dateEvenement);
       const aujourdhui = new Date();
       aujourdhui.setHours(0, 0, 0, 0);
       return eventDate >= aujourdhui;
     })
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    .sort((a, b) => new Date(a.dateEvenement) - new Date(b.dateEvenement));
 
   // Fonction pour formater la date
   const formatDateComplete = (dateString) => {
     const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('fr-FR', options);
+  };
+
+  const handleSelectionChange = (eventId) => {
+    setSelectedEvents(prevSet => {
+      const newSet = new Set(prevSet);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -192,9 +214,9 @@ function Event() {
 
                 // On ajoute une classe 'selectable' et un écouteur de clic sur la carte entière
                 <article 
-                  key={event.id} 
+                  key={event.idEvenement} 
                   className={`event-full-card ${isDeleteMode ? 'selectable' : ''}`}
-                  onClick={() => isDeleteMode && handleSelectionChange(event.id)} // Permet de cliquer sur la carte pour cocher
+                  onClick={() => isDeleteMode && handleSelectionChange(event.idEvenement)} // Permet de cliquer sur la carte pour cocher
                 >
 
                   {/* --- CASE À COCHER --- */}
@@ -203,19 +225,19 @@ function Event() {
                     <input
                       type="checkbox"
                       className="event-selection-checkbox"
-                      checked={selectedEvents.has(event.id)}
+                      checked={selectedEvents.has(event.idEvenement)}
                       readOnly // On la met en lecture seule car le clic est géré par la carte
                     />
                   )}
                   <div className="event-full-header">
-                    <h2 className="event-full-title">{event.titre}</h2>
-                    <span className={`event-full-type type-${event.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                      {event.type}
+                    <h2 className="event-full-title">{event.nom}</h2>
+                    <span className={`event-full-type type-${event.typeEvenement.toLowerCase().replace(/\s+/g, '-')}`}>
+                      {event.typeEvenement}
                     </span>
                   </div>
                   <div className="event-full-infos">
-                    <span>📅 {formatDateComplete(event.date)}</span>
-                    <span>🕐 {event.heure}</span>
+                    <span>📅 {formatDateComplete(event.dateEvenement)}</span>
+                    <span>🕐 {event.heure !== undefined && event.minutes !== undefined? `${event.heure.toString().padStart(2, '0')}:${event.minutes.toString().padStart(2, '0')}`: ''}</span>
                     <span>📍 {event.lieu}</span>
                   </div>
                   <p className="event-full-description">{event.description}</p>
