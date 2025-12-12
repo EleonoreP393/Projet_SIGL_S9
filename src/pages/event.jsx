@@ -1,53 +1,99 @@
 import React, { useState, useEffect } from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
-import { evenements } from "../data/evenements";
 import { Link, useNavigate } from "react-router-dom";
 
 function Event() {
   const navigate = useNavigate();
 
-  // --- GESTION DES DONNÉES ET DES ÉTATS ---
-  const [events, setEvents] = useState([]);
+  // --- ÉTATS ---
+  const [events, setEvents] = useState([]); // liste vide
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // États pour le mode de suppression
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState(new Set());
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // L'état du formulaire correspond aux champs du frontend
   const [newEvent, setNewEvent] = useState({
     titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: ""
   });
-  const [error, setError] = useState(""); // Pour afficher les erreurs du formulaire
+  const [error, setError] = useState("");
 
-  // --- RÉCUPÉRATION DES ÉVÉNEMENTS DEPUIS L'API AU CHARGEMENT ---
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch("/api/evenements"); // Assurez-vous d'avoir une route GET
-        const data = await response.json();
-        if (data.success) {
-          setEvents(data.evenements);
-        }
-      } catch (err) {
-        console.error("Impossible de charger les événements:", err);
+  // --- useEffect pour appeler l'API au chargement ---
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch("/api/searchAllEvenement", { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        setEvents(data.evenements || []);
+      } else {
+        throw new Error(data.error || "Erreur chargement événements.");
       }
-    };
-    // fetchEvents(); // Décommentez ceci quand votre route GET /api/evenements sera prête
+    } catch (err) {
+      console.error("Impossible de charger les événements:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
   }, []);
 
   // --- LOGIQUE DE NAVIGATION ET DE RÔLE ---
-  const handleSelectionChange = (eventId) => {
-  const newSelection = new Set(selectedEvents);
-    if (newSelection.has(eventId)) {
-      newSelection.delete(eventId);
-    } else {
-      newSelection.add(eventId);
-    }
-    setSelectedEvents(newSelection);
+  const handleAddEvent = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const [heureStr, minutesStr] = newEvent.heure.split(":");
+    // Crée l'objet que le backend attend :
+    const eventToSend = {
+      nom: newEvent.titre,
+      description: newEvent.description,
+      lieu: newEvent.lieu,
+      dateEvenement: newEvent.date,
+      typeEvenement: newEvent.type,
+      heure: parseInt(heureStr, 10),
+      minutes: parseInt(minutesStr, 10)
+    };
+    const response = await fetch("/api/createEvenement", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventToSend),
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Erreur création.");
+    await fetchEvents();
+    setIsModalOpen(false);
+    setNewEvent({ titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: "" });
+  } catch (err) {
+    setError(err.message);
+  }
   };
-  const handleDeleteSelected = () => {
+
+  const handleDeleteSelected = async () => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedEvents.size} événement(s) ?`)) {
-      setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.id)));
-      setIsDeleteMode(false);
-      setSelectedEvents(new Set());
+      try {
+        // On exécute toutes les suppressions en parallèle pour plus d'efficacité
+        const deletePromises = Array.from(selectedEvents).map(id =>
+          fetch("/api/deleteEvenement", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idEvenement: id }),
+          }).then(res => res.json())
+        );
+        const results = await Promise.all(deletePromises);
+        // On vérifie si une des suppressions a échoué
+        if (results.some(res => !res.success)) {
+          throw new Error("Certaines suppressions ont échoué.");
+        }
+        // Si tout réussit, on met à jour l'état local
+        setEvents(prevEvents => prevEvents.filter(event => !selectedEvents.has(event.idEvenement)));
+        setIsDeleteMode(false);
+        setSelectedEvents(new Set());
+      } catch (err) {
+        alert(err.message);
+      }
     }
   };
 
@@ -71,7 +117,6 @@ function Event() {
 
   const basePages = [
   { label: "Journal de Formation", path: "/journal" },
-  { label: "Documents", path: "/documents" },
   { label: "Evénements", path: "/evenements" },
   { label: "Notifications", path: "/notifications" },
   ];
@@ -87,44 +132,32 @@ function Event() {
     const { name, value } = e.target;
     setNewEvent(prev => ({ ...prev, [name]: value }));
   };
-  const handleAddEvent = async (e) => {
-    e.preventDefault();
-    setError(""); // Réinitialise les erreurs
-    try {
-      const response = await fetch("/api/evenements", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEvent),
-      });
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.error || "Une erreur est survenue.");
-      }
-      // Ajoute le nouvel événement à la liste pour une mise à jour instantanée
-      // L'idéal est de récupérer l'événement complet renvoyé par l'API
-      setEvents(prevEvents => [...prevEvents, { ...newEvent, id: data.insertedId }]);
-      
-      // Ferme le modal et réinitialise le formulaire
-      setIsModalOpen(false);
-      setNewEvent({ titre: "", date: "", heure: "", lieu: "", type: "Atelier", description: "" });
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
-  const evenementsAVenir = evenements
+  const evenementsAVenir = events
     .filter(event => {
-      const eventDate = new Date(event.date);
+      const eventDate = new Date(event.dateEvenement);
       const aujourdhui = new Date();
       aujourdhui.setHours(0, 0, 0, 0);
       return eventDate >= aujourdhui;
     })
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    .sort((a, b) => new Date(a.dateEvenement) - new Date(b.dateEvenement));
 
   // Fonction pour formater la date
   const formatDateComplete = (dateString) => {
     const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('fr-FR', options);
+  };
+
+  const handleSelectionChange = (eventId) => {
+    setSelectedEvents(prevSet => {
+      const newSet = new Set(prevSet);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -180,9 +213,9 @@ function Event() {
 
                 // On ajoute une classe 'selectable' et un écouteur de clic sur la carte entière
                 <article 
-                  key={event.id} 
+                  key={event.idEvenement} 
                   className={`event-full-card ${isDeleteMode ? 'selectable' : ''}`}
-                  onClick={() => isDeleteMode && handleSelectionChange(event.id)} // Permet de cliquer sur la carte pour cocher
+                  onClick={() => isDeleteMode && handleSelectionChange(event.idEvenement)} // Permet de cliquer sur la carte pour cocher
                 >
 
                   {/* --- CASE À COCHER --- */}
@@ -191,19 +224,19 @@ function Event() {
                     <input
                       type="checkbox"
                       className="event-selection-checkbox"
-                      checked={selectedEvents.has(event.id)}
+                      checked={selectedEvents.has(event.idEvenement)}
                       readOnly // On la met en lecture seule car le clic est géré par la carte
                     />
                   )}
                   <div className="event-full-header">
-                    <h2 className="event-full-title">{event.titre}</h2>
-                    <span className={`event-full-type type-${event.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                      {event.type}
+                    <h2 className="event-full-title">{event.nom}</h2>
+                    <span className={`event-full-type type-${event.typeEvenement.toLowerCase().replace(/\s+/g, '-')}`}>
+                      {event.typeEvenement}
                     </span>
                   </div>
                   <div className="event-full-infos">
-                    <span>📅 {formatDateComplete(event.date)}</span>
-                    <span>🕐 {event.heure}</span>
+                    <span>📅 {formatDateComplete(event.dateEvenement)}</span>
+                    <span>🕐 {event.heure !== undefined && event.minutes !== undefined? `${event.heure.toString().padStart(2, '0')}:${event.minutes.toString().padStart(2, '0')}`: ''}</span>
                     <span>📍 {event.lieu}</span>
                   </div>
                   <p className="event-full-description">{event.description}</p>
