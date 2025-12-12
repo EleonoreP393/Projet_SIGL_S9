@@ -8,6 +8,7 @@ import JournalDeFormation from './pages/JournalDeFormation'
 import Notification from './pages/notification'
 import Event from "./pages/event";
 import Gestion from "./pages/gestion";
+import UserEdit from "./pages/userEdit";
 
 
 function RequireAuth({ children }) {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/notifications" element={<Notification />} />
         <Route path="/journal" element={<JournalDeFormation />} />
         <Route path="/gestion" element={<RequireAuth><Gestion /></RequireAuth>} />
+        <Route path="/gestion/edit/:userId" element={<UserEdit />}/>
         <Route path="/evenements" element={<RequireAuth><Event /></RequireAuth>} />
         <Route path="/" element={<RequireAuth><Home /></RequireAuth>}/>
         <Route path="*" element={<Navigate to="/" replace />} />

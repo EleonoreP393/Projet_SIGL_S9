@@ -188,16 +188,19 @@ function Gestion() {
                 <h2 className="role-group-title">{roleName}</h2>
                 <div className="users-list">
                   {groupedUsers[roleName].map(user => (
-                    <div key={user.idUtilisateur} className="user-details-card">
-                      <div className="user-card-header">
-                        <button className="delete-user-btn" onClick={() => handleDeleteUser(user.idUtilisateur)}>
-                          ✕
-                        </button>
+                    <Link key={user.idUtilisateur} to={`/gestion/edit/${user.idUtilisateur}`} className="user-card-link" state={{ user: user }}>
+                      <div key={user.idUtilisateur} className="user-details-card">
+                        <div className="user-card-header">
+                          <button className="delete-user-btn" onClick={(e) => {e.preventDefault(); // Annule la navigation du <Link>
+                            handleDeleteUser(user.idUtilisateur);}}>
+                            ✕
+                          </button>
+                        </div>
+                        <p><strong>Login:</strong> {user.nomUtilisateur}</p>
+                        <p><strong>Email:</strong> {user.email}</p>
+                        <p><strong>Mot de passe:</strong> ********</p>
                       </div>
-                      <p><strong>Login:</strong> {user.nomUtilisateur}</p>
-                      <p><strong>Email:</strong> {user.email}</p>
-                      <p><strong>Mot de passe:</strong> ********</p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
