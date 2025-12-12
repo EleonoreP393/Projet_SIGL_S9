@@ -117,7 +117,6 @@ function Event() {
 
   const basePages = [
   { label: "Journal de Formation", path: "/journal" },
-  { label: "Documents", path: "/documents" },
   { label: "Evénements", path: "/evenements" },
   { label: "Notifications", path: "/notifications" },
   ];

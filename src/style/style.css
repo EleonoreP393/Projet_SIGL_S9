@@ -670,6 +670,15 @@ input {
   /* Au hover, affiche tout le texte */
   transition: white-space 0.2s ease;
 }
+/* Message si aucune notification */
+.no-notifications {
+  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  text-align: center;
+  padding: 9px;
+  margin: 0;
+}
 .notification-item:hover .notification-text {
   white-space: normal;   /* permet le retour à la ligne */
   overflow: visible;
