@@ -7,7 +7,15 @@ const roleIdToName = {
     1: 'Apprenti',
     2: 'Coordinatrice',
     3: 'Tuteur',
-    4: 'Jury'
+    4: 'Jury',
+    5: 'MaitreApprentissage'
+};
+
+const contactRoleMap = {
+    'Coordinatrice': 2,
+    'Tuteur': 3,
+    'Jury': 4,
+    'MaitreApprentissage': 5
 };
 
 function UserEdit() {
@@ -30,23 +38,25 @@ function UserEdit() {
         role: 'Tuteur' // Rôle par défaut
     });
 
+    useEffect(() => {
+        fetchUserContacts();
+    }, [userId]);
+
     const fetchUserContacts = async () => {
         try {
-            // Appelle la route pour chercher les contacts de l'apprenti/utilisateur
-            const response = await fetch('/api/searchContactApprenti', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ idApprenti: userId })
-            });
-            const data = await response.json();
-            // ATTENTION : votre backend renvoie 'evenement', on s'adapte à cette erreur
-            if (data.success) {
-                setContacts(data.evenement || []);
-            } else {
-                throw new Error(data.error || "Erreur chargement des contacts.");
-            }
+          const response = await fetch("/api/searchContactApprenti", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idApprenti: userId }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            setContacts(data.contacts || []);
+          } else {
+            throw new Error(data.error || "Erreur chargement des contacts.");
+          }
         } catch (err) {
-            console.error("Erreur contacts:", err);
+          console.error("Erreur contacts:", err);
         }
     };
 
@@ -71,35 +81,55 @@ function UserEdit() {
 
     const handleAddContactSubmit = async (e) => {
         e.preventDefault();
-        
-        // Préparation de l'objet à envoyer au backend
+
         const contactData = {
-            ...newContact,
-            idRole: contactRoleMap[newContact.role], // Convertit le nom du rôle en ID
-            idUtilisateur: userId // On ajoute l'ID de l'utilisateur actuel pour la liaison
+          prenomContact: newContact.prenomContact,
+          nomContact: newContact.nomContact,
+          emailContact: newContact.emailContact,
+          telephoneContact: newContact.telephoneContact,
+          idRole: contactRoleMap[newContact.role],
+          idApprenti: user.idUtilisateur, // très important : c'est l'idApprenti pour la table contact
         };
-        
+    
         try {
-            // NOTE : CETTE ROUTE DOIT ÊTRE CRÉÉE SUR LE BACKEND !
-            const response = await fetch('/api/createNewContactAndLink', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(contactData)
-            });
-            const data = await response.json();
-            if (!data.success) throw new Error(data.error);
-            
-            alert("Nouveau contact créé et associé !");
-            await fetchUserContacts(); // Rafraîchit la liste
-            setIsAddContactModalOpen(false); // Ferme le modal
+          const response = await fetch("/api/createNewContactAndLink", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(contactData),
+          });
+      
+          if (!response.ok) {
+            const txt = await response.text();
+            throw new Error(`HTTP ${response.status} : ${txt}`);
+          }
+      
+          const data = await response.json();
+          if (!data.success) throw new Error(data.error || "Erreur inconnue côté serveur.");
+      
+          // On recharge la liste des contacts de cet apprenti
+          await fetchUserContacts();
+      
+          // Reset du formulaire + fermeture du modal
+          setNewContact({
+            prenomContact: "",
+            nomContact: "",
+            emailContact: "",
+            telephoneContact: "",
+            role: "Tuteur",
+          });
+          setIsAddContactModalOpen(false);
         } catch (err) {
-            alert(`Erreur lors de la création du contact: ${err.message}`);
+          alert(`Erreur lors de la création du contact: ${err.message}`);
         }
     };
 
     const handleUserChange = (e) => {
         const { name, value } = e.target;
         setUser(prev => ({ ...prev, [name]: value }));
+    };
+    const handleNewContactChange = (e) => {
+        const { name, value } = e.target;
+        setNewContact((prev) => ({ ...prev, [name]: value }));
     };
     const handleUserSubmit = (e) => {
         e.preventDefault();
@@ -157,19 +187,19 @@ function UserEdit() {
                     <h2>Contacts</h2>
                     {contacts.map(contact => (
                         <div key={contact.idContact} className="contact-details-card">
-                            <button 
-                                className="delete-user-btn" 
-                                onClick={() => handleDeleteContact(contact.idContact)}
-                                style={{float: 'right'}} // Style rapide pour positionner
-                            >
-                                ✕
-                            </button>
-                           <h3>{contact.roleContact || 'Contact'}</h3>
-                           {/* ATTENTION: Les noms de colonnes peuvent être différents */}
-                           <p><strong>Nom:</strong> {contact.prenomContact} {contact.nomContact}</p>
-                           <p><strong>Email:</strong> {contact.emailContact}</p>
+                          <button
+                            className="delete-user-btn"
+                            onClick={() => handleDeleteContact(contact.idContact)}
+                            style={{ float: "right" }}
+                          >
+                            ✕
+                          </button>
+                          <h3>{roleIdToName[contact.idRole] || "Contact"}</h3>
+                          <p><strong>Nom:</strong> {contact.prenomContact} {contact.nomContact}</p>
+                          <p><strong>Email:</strong> {contact.emailContact}</p>
+                          <p><strong>Téléphone:</strong> {contact.telephoneContact}</p>
                         </div>
-                    ))}
+            ))}
                      <button className="add-contact-button" onClick={() => setIsAddContactModalOpen(true)}>+ Ajouter un Contact</button>
                 </div>
             </div>

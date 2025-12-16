@@ -7,13 +7,15 @@ const roleIdToName = {
     1: 'Apprenti',
     2: 'Coordinatrice',
     3: 'Tuteur',
-    4: 'Jury'
+    4: 'Jury',
+    5: 'Maitre Apprentissage'
 };
 const roleNameToId = {
     'Apprenti': 1,
     'Coordinatrice': 2,
     'Tuteur': 3,
-    'Jury': 4
+    'Jury': 4,
+    'Maitre Apprentissage': 5
 };
 
 function Gestion() {
@@ -28,6 +30,24 @@ function Gestion() {
   // États pour le formulaire d'ajout
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({ prenomUtilisateur: '', nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' });
+
+  // --- États pour les PROMOTIONS ---
+  const [promotions, setPromotions] = useState([]);
+  const [isAddPromoModalOpen, setIsAddPromoModalOpen] = useState(false);
+  const [newPromo, setNewPromo] = useState({
+    nomPromotion: "",
+    annee: "",
+    idEcole: "",
+  });
+
+  // --- États pour les ENTREPRISES ---
+  const [entreprises, setEntreprises] = useState([]);
+  const [isAddEntrepriseModalOpen, setIsAddEntrepriseModalOpen] = useState(false);
+  const [newEntreprise, setNewEntreprise] = useState({
+    nom: "",
+    siret: "",
+    adresse: "",
+  });
 
   // --- RÉCUPÉRATION ET GROUPEMENT DES DONNÉES ---
   useEffect(() => {
@@ -60,25 +80,74 @@ function Gestion() {
         }, {});
         setGroupedUsers(groups);
     }, [users]);
+  
+    useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/searchAllCompte', { method: 'POST' });
+        const data = await response.json();
+        if (data.success) {
+          setUsers(data.utilisateurs || []); 
+        } else {
+          throw new Error(data.error || "Impossible de charger les utilisateurs.");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchPromotions = async () => {
+      try {
+        const response = await fetch("/api/searchAllPromotion", { method: "POST" });
+        const data = await response.json();
+        if (data.success) {
+          setPromotions(data.promotions || []);
+        }
+      } catch (err) {
+        console.error("Erreur chargement promotions:", err);
+      }
+    };
+
+    const fetchEntreprises = async () => {
+      try {
+        const response = await fetch("/api/searchAllEntreprise", { method: "POST" });
+        const data = await response.json();
+        if (data.success) {
+          setEntreprises(data.entreprises || []);
+        }
+      } catch (err) {
+        console.error("Erreur chargement entreprises:", err);
+      }
+    };
+
+    fetchUsers();
+    fetchPromotions();
+    fetchEntreprises();
+  }, []);
 
   // --- LOGIQUE POUR LES ACTIONS ---
   const handleDeleteUser = async (userIdToDelete) => {
-        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce compte ?")) {
-            try {
-                const response = await fetch(`/api/deleteCompte`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idUtilisateur: userIdToDelete }), 
-                });
-                const data = await response.json();
-                if (!data.success) throw new Error(data.error);
-                // Si la suppression a réussi, on met à jour l'affichage
-                setUsers(currentUsers => currentUsers.filter(user => user.idUtilisateur !== userIdToDelete));
-            } catch (err) {
-                alert(`Erreur lors de la suppression: ${err.message}`);
-            }
-        }
-    };
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce compte ?")) {
+      try {
+        const response = await fetch(`/api/deleteCompteComplet`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idUtilisateur: userIdToDelete }),
+        });
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error || "Suppression échouée.");
+
+        // Si tout va bien, on met à jour l'affichage
+        setUsers(currentUsers =>
+          currentUsers.filter(user => user.idUtilisateur !== userIdToDelete)
+        );
+      } catch (err) {
+        alert(`Erreur lors de la suppression: ${err.message}`);
+      }
+    }
+  };
 
   const handleAddUserChange = (e) => {
     const { name, value } = e.target;
@@ -86,34 +155,215 @@ function Gestion() {
   };
 
   const handleAddUserSubmit = async (e) => {
-        e.preventDefault();
-        const userToCreate = {
-            prenomUtilisateur: newUser.prenomUtilisateur,
-            nomUtilisateur: newUser.nomUtilisateur,
-            email: newUser.email,
-            motDePasse: newUser.motDePasse,
-            idRole: roleNameToId[newUser.roleName]
-        };
-        try {
-            const response = await fetch('/api/createCompte', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userToCreate)
-            });
-            const data = await response.json();
-            if (!data.success) throw new Error(data.error);
-            // On recharge la liste pour voir le nouvel utilisateur
-            setLoading(true);
-            const refreshResponse = await fetch('/api/searchAllCompte', { method: 'POST' });
-            const refreshData = await refreshResponse.json();
-            if (refreshData.success) setUsers(refreshData.utilisateurs || []);
-            setLoading(false);
-            setIsAddModalOpen(false);
-            setNewUser({ prenomUtilisateur: '', nomUtilisateur: '', email: '', motDePasse: '', roleName: 'Apprenti' });
-        } catch (err) {
-            alert(`Erreur lors de la création: ${err.message}`);
-        }
+    e.preventDefault();
+
+    const userToCreate = {
+      prenomUtilisateur: newUser.prenomUtilisateur,
+      nomUtilisateur: newUser.nomUtilisateur,
+      email: newUser.email,
+      motDePasse: newUser.motDePasse,
+      idRole: roleNameToId[newUser.roleName],
     };
+
+    try {
+      // 1) Créer le compte utilisateur
+      const response = await fetch("/api/createCompte", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userToCreate),
+      });
+
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Erreur création compte.");
+
+      const newUserId = data.idUtilisateur; // <-- récupère l'ID retourné par le back
+      if (!newUserId) {
+        throw new Error("L'API createCompte n'a pas renvoyé idUtilisateur.");
+      }
+
+      // 2) En fonction du rôle, créer l'entrée dans la table spécialisée
+      const roleName = newUser.roleName;
+      if (roleName === "Apprenti") {
+        const apprentiPayload = {
+          idUtilisateur: newUserId,
+          idPromotion: 1,
+          idEntreprise: 1,
+          idMa: 1,
+          idJury: 1,
+          idTp: 1,
+        };
+        await fetch("/api/createApprenti", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(apprentiPayload),
+        });
+      } else if (roleName === "Jury") {
+        const juryPayload = {
+          idUtilisateur: newUserId,
+        };
+        await fetch("/api/createJury", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(juryPayload),
+        });
+      } else if (roleName === "Tuteur") {
+        const tuteurPayload = {
+          idUtilisateur: newUserId,
+        };
+        await fetch("/api/createTuteur", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tuteurPayload),
+        });
+      } else if (roleName === "Coordinatrice") {
+        const coordinatricePayload = {
+          idUtilisateur: newUserId,
+        };
+        await fetch("/api/createCoordinatrice", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(coordinatricePayload),
+        });
+      } else if (roleName === "Maitre Apprentissage") {
+        const maitreapprentissagePayload = {
+          idUtilisateur: newUserId,
+        };
+        await fetch("/api/createMA", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(maitreapprentissagePayload),
+        });
+      }
+
+      // 3) Recharger la liste des comptes
+      setLoading(true);
+      const refreshResponse = await fetch("/api/searchAllCompte", { method: "POST" });
+      const refreshData = await refreshResponse.json();
+      if (refreshData.success) setUsers(refreshData.utilisateurs || []);
+      setLoading(false);
+
+      // 4) Fermer le modal + reset du form
+      setIsAddModalOpen(false);
+      setNewUser({
+        prenomUtilisateur: "",
+        nomUtilisateur: "",
+        email: "",
+        motDePasse: "",
+        roleName: "Apprenti",
+      });
+
+    } catch (err) {
+      alert(`Erreur lors de la création: ${err.message}`);
+    }
+  };
+
+  // --- PROMOTIONS ---
+
+  const handleNewPromoChange = (e) => {
+    const { name, value } = e.target;
+    setNewPromo(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddPromoSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      nomPromotion: newPromo.nomPromotion,
+      annee: newPromo.annee,
+      idEcole: newPromo.idEcole,
+    };
+
+    try {
+      const response = await fetch("/api/createPromotion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Erreur création promotion.");
+
+      // Recharger les promotions
+      const refresh = await fetch("/api/searchAllPromotion", { method: "POST" });
+      const refreshData = await refresh.json();
+      if (refreshData.success) setPromotions(refreshData.promotions || []);
+
+      // Reset + fermer le modal
+      setNewPromo({ nomPromotion: "", annee: "", idEcole: "" });
+      setIsAddPromoModalOpen(false);
+    } catch (err) {
+      alert(`Erreur lors de la création de la promotion: ${err.message}`);
+    }
+  };
+
+  const handleDeletePromo = async (idPromotionToDelete) => {
+    if (!window.confirm("Supprimer cette promotion ?")) return;
+
+    try {
+      const response = await fetch("/api/deletePromotion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idPromotion: idPromotionToDelete }),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Suppression échouée.");
+
+      setPromotions(prev => prev.filter(p => p.idPromotion !== idPromotionToDelete));
+    } catch (err) {
+      alert(`Erreur lors de la suppression de la promotion: ${err.message}`);
+    }
+  };
+
+  // --- ENTREPRISES ---
+
+  const handleNewEntrepriseChange = (e) => {
+    const { name, value } = e.target;
+    setNewEntreprise(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddEntrepriseSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      nom: newEntreprise.nom,
+      siret: newEntreprise.siret,
+      adresse: newEntreprise.adresse,
+    };
+
+    try {
+      const response = await fetch("/api/createEntreprise", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Erreur création entreprise.");
+
+      const refresh = await fetch("/api/searchAllEntreprise", { method: "POST" });
+      const refreshData = await refresh.json();
+      if (refreshData.success) setEntreprises(refreshData.entreprises || []);
+
+      setNewEntreprise({ nom: "", siret: "", adresse: "" });
+      setIsAddEntrepriseModalOpen(false);
+    } catch (err) {
+      alert(`Erreur lors de la création de l'entreprise: ${err.message}`);
+    }
+  };
+
+  const handleDeleteEntreprise = async (idEntrepriseToDelete) => {
+    if (!window.confirm("Supprimer cette entreprise ?")) return;
+
+    try {
+      const response = await fetch("/api/deleteEntreprise", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idEntreprise: idEntrepriseToDelete }),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Suppression échouée.");
+
+      setEntreprises(prev => prev.filter(e => e.idEntreprise !== idEntrepriseToDelete));
+    } catch (err) {
+      alert(`Erreur lors de la suppression de l'entreprise: ${err.message}`);
+    }
+  };
 
 
   // --- LOGIQUE DE NAVIGATION ---
@@ -207,6 +457,79 @@ function Gestion() {
             ))}
           </div>
         </section>
+        {/* --- GESTION DES PROMOTIONS --- */}
+        <section className="gestion-page-container">
+          <div className="page-header-actions">
+            <h1 className="gestion-page-title">Gestion des Promotions</h1>
+            <button
+              className="add-account-button"
+              onClick={() => setIsAddPromoModalOpen(true)}
+            >
+              + Ajouter une Promotion
+            </button>
+          </div>
+
+          <div className="list-container">
+            {promotions.length > 0 ? (
+              <div className="users-list">
+                {promotions.map(promo => (
+                  <div key={promo.idPromotion} className="user-details-card">
+                    <div className="user-card-header">
+                      <button
+                        className="delete-user-btn"
+                        onClick={() => handleDeletePromo(promo.idPromotion)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <p><strong>Nom :</strong> {promo.nomPromotion}</p>
+                    <p><strong>Année :</strong> {promo.annee}</p>
+                    <p><strong>École (id) :</strong> {promo.idEcole}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Aucune promotion pour le moment.</p>
+            )}
+          </div>
+        </section>
+
+        {/* --- GESTION DES ENTREPRISES --- */}
+        <section className="gestion-page-container">
+          <div className="page-header-actions">
+            <h1 className="gestion-page-title">Gestion des Entreprises</h1>
+            <button
+              className="add-account-button"
+              onClick={() => setIsAddEntrepriseModalOpen(true)}
+            >
+              + Ajouter une Entreprise
+            </button>
+          </div>
+
+          <div className="list-container">
+            {entreprises.length > 0 ? (
+              <div className="users-list">
+                {entreprises.map(ent => (
+                  <div key={ent.idEntreprise} className="user-details-card">
+                    <div className="user-card-header">
+                      <button
+                        className="delete-user-btn"
+                        onClick={() => handleDeleteEntreprise(ent.idEntreprise)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <p><strong>Nom :</strong> {ent.nom}</p>
+                    <p><strong>SIRET :</strong> {ent.siret}</p>
+                    <p><strong>Adresse :</strong> {ent.adresse}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Aucune entreprise pour le moment.</p>
+            )}
+          </div>
+        </section>
       </main>
       {isAddModalOpen && (
         <div className="modal-overlay">
@@ -238,12 +561,113 @@ function Gestion() {
                     <option>Tuteur</option>
                     <option>Coordinatrice</option>
                     <option>Jury</option>
+                    <option>Maitre Apprentissage</option>
                   </select>
                 </div>
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn-secondary" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
                 <button type="submit" className="btn-primary">Sauvegarder</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* MODAL : Nouvelle Promotion */}
+      {isAddPromoModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Nouvelle Promotion</h2>
+            <form onSubmit={handleAddPromoSubmit} className="modal-form">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Nom de la promotion</label>
+                  <input
+                    name="nomPromotion"
+                    value={newPromo.nomPromotion}
+                    onChange={handleNewPromoChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Année</label>
+                  <input
+                    name="annee"
+                    value={newPromo.annee}
+                    onChange={handleNewPromoChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ID École</label>
+                  <input
+                    name="idEcole"
+                    value={newPromo.idEcole}
+                    onChange={handleNewPromoChange}
+                  />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setIsAddPromoModalOpen(false)}
+                >
+                  Annuler
+                </button>
+                <button type="submit" className="btn-primary">
+                  Sauvegarder
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL : Nouvelle Entreprise */}
+      {isAddEntrepriseModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Nouvelle Entreprise</h2>
+            <form onSubmit={handleAddEntrepriseSubmit} className="modal-form">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Nom</label>
+                  <input
+                    name="nom"
+                    value={newEntreprise.nom}
+                    onChange={handleNewEntrepriseChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>SIRET</label>
+                  <input
+                    name="siret"
+                    value={newEntreprise.siret}
+                    onChange={handleNewEntrepriseChange}
+                  />
+                </div>
+                <div className="form-group form-group-full">
+                  <label>Adresse</label>
+                  <input
+                    name="adresse"
+                    value={newEntreprise.adresse}
+                    onChange={handleNewEntrepriseChange}
+                  />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setIsAddEntrepriseModalOpen(false)}
+                >
+                  Annuler
+                </button>
+                <button type="submit" className="btn-primary">
+                  Sauvegarder
+                </button>
               </div>
             </form>
           </div>
