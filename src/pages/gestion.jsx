@@ -40,6 +40,14 @@ function Gestion() {
     idEcole: "",
   });
 
+  // --- États pour les ECOLES ---
+  const [ecoles, setEcoles] = useState([]);
+  const [isAddEcoleModalOpen, setIsAddEcoleModalOpen] = useState(false);
+  const [newEcole, setNewEcole] = useState({
+    nomEcole: "",
+    adresseEcole: "",
+  });
+
   // --- États pour les ENTREPRISES ---
   const [entreprises, setEntreprises] = useState([]);
   const [isAddEntrepriseModalOpen, setIsAddEntrepriseModalOpen] = useState(false);
@@ -110,6 +118,22 @@ function Gestion() {
       }
     };
 
+    const fetchEcoles = async () => {
+    try {
+      const response = await fetch("/api/searchAllEcole", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEcoles(data.ecoles || []);
+      }
+    } catch (err) {
+      console.error("Erreur chargement écoles:", err);
+    }
+  };
+
     const fetchEntreprises = async () => {
       try {
         const response = await fetch("/api/searchAllEntreprise", { method: "POST" });
@@ -124,6 +148,7 @@ function Gestion() {
 
     fetchUsers();
     fetchPromotions();
+    fetchEcoles();
     fetchEntreprises();
   }, []);
 
@@ -276,13 +301,17 @@ function Gestion() {
       const response = await fetch("/api/createPromotion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          nomPromotion: newPromo.nomPromotion,
+          annee: newPromo.annee,
+          idEcole: newPromo.idEcole,
+        }),
       });
       const data = await response.json();
       if (!data.success) throw new Error(data.error || "Erreur création promotion.");
 
       // Recharger les promotions
-      const refresh = await fetch("/api/searchAllPromotion", { method: "POST" });
+      const refresh = await fetch("/api/searchAllPromotion", { method: "POST" , headers: { "Content-Type": "application/json" },body: JSON.stringify({}),});
       const refreshData = await refresh.json();
       if (refreshData.success) setPromotions(refreshData.promotions || []);
 
@@ -310,6 +339,58 @@ function Gestion() {
     } catch (err) {
       alert(`Erreur lors de la suppression de la promotion: ${err.message}`);
     }
+  };
+
+  // --- ECOLES ---
+  const handleNewEcoleChange = (e) => {
+    const { name, value } = e.target;
+    setNewEcole(prev => ({ ...prev, [name]: value }));
+  };
+  const handleAddEcoleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      nomEcole: newEcole.nomEcole,
+      adresseEcole: newEcole.adresseEcole,
+    };
+    try {
+      const response = await fetch("/api/createEcole", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Erreur création école.");
+      const refresh = await fetch("/api/searchAllEcole", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const refreshData = await refresh.json();
+      if (refreshData.success) setEcoles(refreshData.ecoles || []);
+      setNewEcole({ nomEcole: "", adresseEcole: ""});
+      setIsAddEcoleModalOpen(false);
+    } catch (err) {
+      alert(`Erreur lors de la création de l'école: ${err.message}`);
+    }
+  };
+  const handleDeleteEcole = async (idEcoleToDelete) => {
+    if (!window.confirm("Supprimer cette école ?")) return;
+    try {
+      const response = await fetch("/api/deleteEcole", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idEcole: idEcoleToDelete }),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Suppression échouée.");
+      setEcoles(prev => prev.filter(e => e.idEcole !== idEcoleToDelete));
+    } catch (err) {
+      alert(`Erreur lors de la suppression de l'école: ${err.message}`);
+    }
+  };
+  const getEcoleNameById = (idEcole) => {
+    const ecole = ecoles.find(e => e.idEcole === idEcole || e.idEcole === Number(idEcole));
+    return ecole ? ecole.nomEcole : idEcole; // fallback: affiche l'id si pas trouvée
   };
 
   // --- ENTREPRISES ---
@@ -457,6 +538,7 @@ function Gestion() {
             ))}
           </div>
         </section>
+
         {/* --- GESTION DES PROMOTIONS --- */}
         <section className="gestion-page-container">
           <div className="page-header-actions">
@@ -484,12 +566,48 @@ function Gestion() {
                     </div>
                     <p><strong>Nom :</strong> {promo.nomPromotion}</p>
                     <p><strong>Année :</strong> {promo.annee}</p>
-                    <p><strong>École (id) :</strong> {promo.idEcole}</p>
+                    <p><strong>École :</strong> {getEcoleNameById(promo.idEcole)}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p>Aucune promotion pour le moment.</p>
+              <p style={{ color: "#d4af37"}}>Aucune promotion pour le moment.</p>
+            )}
+          </div>
+        </section>
+
+        {/* --- GESTION DES ECOLES --- */}
+        <section className="gestion-page-container">
+          <div className="page-header-actions">
+            <h1 className="gestion-page-title">Gestion des Écoles</h1>
+            <button
+              className="add-account-button"
+              onClick={() => setIsAddEcoleModalOpen(true)}
+            >
+              + Ajouter une École
+            </button>
+          </div>
+
+          <div className="list-container">
+            {ecoles.length > 0 ? (
+              <div className="users-list">
+                {ecoles.map(ecole => (
+                  <div key={ecole.idEcole} className="user-details-card">
+                    <div className="user-card-header">
+                      <button
+                        className="delete-user-btn"
+                        onClick={() => handleDeleteEcole(ecole.idEcole)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <p><strong>Nom :</strong> {ecole.nomEcole}</p>
+                    <p><strong>Adresse :</strong> {ecole.adresseEcole}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: "#d4af37"}}>Aucune école pour le moment.</p>
             )}
           </div>
         </section>
@@ -526,7 +644,7 @@ function Gestion() {
                 ))}
               </div>
             ) : (
-              <p>Aucune entreprise pour le moment.</p>
+              <p style={{ color: "#d4af37"}}>Aucune entreprise pour le moment.</p>
             )}
           </div>
         </section>
@@ -600,11 +718,14 @@ function Gestion() {
                 </div>
                 <div className="form-group">
                   <label>ID École</label>
-                  <input
-                    name="idEcole"
-                    value={newPromo.idEcole}
-                    onChange={handleNewPromoChange}
-                  />
+                  <select name="idEcole" value={newPromo.idEcole} onChange={handleNewPromoChange} required>
+                    <option value="">-- Sélectionner une école --</option>
+                      {ecoles.map((ecole) => (
+                        <option key={ecole.idEcole} value={ecole.idEcole}>
+                          {ecole.nomEcole}
+                    </option>
+                      ))}
+                  </select>
                 </div>
               </div>
               <div className="modal-actions">
@@ -612,6 +733,48 @@ function Gestion() {
                   type="button"
                   className="btn-secondary"
                   onClick={() => setIsAddPromoModalOpen(false)}
+                >
+                  Annuler
+                </button>
+                <button type="submit" className="btn-primary">
+                  Sauvegarder
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL : Nouvelle École */}
+      {isAddEcoleModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Nouvelle École</h2>
+            <form onSubmit={handleAddEcoleSubmit} className="modal-form">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Nom de l'école</label>
+                  <input
+                    name="nomEcole"
+                    value={newEcole.nomEcole}
+                    onChange={handleNewEcoleChange}
+                    required
+                  />
+                </div>
+                <div className="form-group form-group-full">
+                  <label>Adresse</label>
+                  <input
+                    name="adresseEcole"
+                    value={newEcole.adresseEcole}
+                    onChange={handleNewEcoleChange}
+                  />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setIsAddEcoleModalOpen(false)}
                 >
                   Annuler
                 </button>

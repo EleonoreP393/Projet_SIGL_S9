@@ -24,6 +24,9 @@ import coordinatriceRouter from "./api/coordinatrice.route.mjs";
 import juryRouter from "./api/jury.route.mjs";
 import tuteurRouter from "./api/tuteur.route.mjs";
 import maitreApprentissageRouter from "./api/maitreApprentissage.route.mjs";
+import promotionRouter from "./api/promotion.route.mjs";
+import entrepriseRouter from "./api/entreprise.route.mjs";
+import ecoleRouter from "./api/ecole.route.mjs";
 
 const app = express();
 app.use(express.json());
@@ -40,6 +43,9 @@ app.use("/api", coordinatriceRouter);
 app.use("/api", juryRouter);
 app.use("/api", tuteurRouter);
 app.use("/api", maitreApprentissageRouter);
+app.use("/api", promotionRouter);
+app.use("/api", entrepriseRouter);
+app.use("/api", ecoleRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
