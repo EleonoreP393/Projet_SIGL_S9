@@ -30,7 +30,14 @@ router.post("/searchAllMA", async (req, res) => {
     try{
 
         const [result] = await pool.execute(
-            "SELECT * FROM MaitreApprentissage;"
+          `SELECT 
+             ma.idUtilisateur,          -- id du maître d'apprentissage (côté table MaitreApprentissage)
+             ma.idEntreprise,           -- entreprise liée au MA
+             u.nomUtilisateur AS nom,   -- nom du MA (depuis utilisateur)
+             u.prenomUtilisateur AS prenom, -- prénom du MA
+             u.email                    -- (optionnel) email du MA
+           FROM MaitreApprentissage ma
+           JOIN utilisateur u ON u.idUtilisateur = ma.idUtilisateur`
         );
 
         return res.json({success: true, maitreApprentissage: result});
@@ -85,5 +92,28 @@ router.post("/deleteMA", async (req, res) => {
         console.error(e);
         return res.status(500).json({ success: false, error: "Erreur serveur" });
     }
+});
+
+router.post("/getEntrepriseForMA", async (req, res) => {
+  try {
+    const { idUtilisateur } = req.body || {};
+    if (!idUtilisateur) {
+      return res.status(400).json({ success: false, error: "idUtilisateur requis" });
+    }
+    const [rows] = await pool.execute(
+      `SELECT e.*
+       FROM MaitreApprentissage ma
+       JOIN Entreprise e ON e.idEntreprise = ma.idEntreprise
+       WHERE ma.idUtilisateur = ?`,
+      [idUtilisateur]
+    );
+    if (rows.length === 0) {
+      return res.json({ success: true, entreprise: null }); // pas d’entreprise liée
+    }
+    return res.json({ success: true, entreprise: rows[0] });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, error: "Erreur serveur" });
+  }
 });
 export default router;

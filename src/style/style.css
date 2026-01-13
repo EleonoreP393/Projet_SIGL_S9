@@ -1471,6 +1471,26 @@ input {
   margin-bottom: 20px;
 }
 
+.linked-infos-section {
+  margin-top: 24px;          /* espace au-dessus, sous les inputs */
+  padding-top: 16px;
+  border-top: 1px solid #444; /* petite séparation visuelle */
+}
+.linked-infos-section h3 {
+  margin: 0 0 12px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  color: #ffc421;
+}
+.linked-infos-section p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.linked-infos-section strong {
+  color: #ffdd77;
+}
+
 .edit-page-layout {
   display: flex; /* Active Flexbox */
   flex-direction: row; /* Aligne les enfants horizontalement (par défaut, mais c'est bien de le préciser) */
