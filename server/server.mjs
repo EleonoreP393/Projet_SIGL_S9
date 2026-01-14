@@ -10,7 +10,7 @@ export const pool = mysql.createPool({
   password: process.env.DB_PASS || "0000",
   database: process.env.DB_NAME || "staracademy",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 20,
 });
 
 // 2) Importe les routes APRÈS l'export du pool
@@ -27,6 +27,8 @@ import maitreApprentissageRouter from "./api/maitreApprentissage.route.mjs";
 import promotionRouter from "./api/promotion.route.mjs";
 import entrepriseRouter from "./api/entreprise.route.mjs";
 import ecoleRouter from "./api/ecole.route.mjs";
+import livrableRouter from "./api/livrable.route.mjs";
+import notificationRouter from "./api/notification.route.mjs";
 
 const app = express();
 app.use(express.json());
@@ -46,6 +48,8 @@ app.use("/api", maitreApprentissageRouter);
 app.use("/api", promotionRouter);
 app.use("/api", entrepriseRouter);
 app.use("/api", ecoleRouter);
+app.use("/api", livrableRouter);
+app.use("/api", notificationRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
