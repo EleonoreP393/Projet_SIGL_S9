@@ -3,6 +3,17 @@ import {pool} from "../server.mjs";
 
 const router = express.Router();
 
+//Chiffrement du mot de passe
+class Sha256Hash {
+    static async encode(input) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+}
+
 router.post("/createCompte", async (req, res) => {
     try{
 
@@ -11,8 +22,11 @@ router.post("/createCompte", async (req, res) => {
             return res.status(400).json({ success: false, error: "Champs requis" });
         }
 
+        //Chiffrement du mot de passe pour comparaison avec la valeur stockée en base de données
+        let encryptedPassword = await Sha256Hash.encode(motDePasse);
+
         const [result] = await pool.execute(
-            "INSERT INTO utilisateur (nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole) VALUES (?,?,?,?,?)", [nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole]
+            "INSERT INTO utilisateur (nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole) VALUES (?,?,?,?,?)", [nomUtilisateur, prenomUtilisateur, email, encryptedPassword, idRole]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création du compte." });

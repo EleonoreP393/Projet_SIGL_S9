@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const READ_KEY = "readNotificationIds_v1";
 
@@ -28,6 +28,7 @@ function formatDateTimeFR(isoString) {
 
 function Notification() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [notifications, setNotifications] = useState([]);
   const [notificationsError, setNotificationsError] = useState(null);
   const [notificationsLoading, setNotificationsLoading] = useState(true);
@@ -97,6 +98,29 @@ function Notification() {
     () => list.find((n) => n.idNotification === selectedId),
     [list, selectedId]
   );
+
+    // Sélection automatique ou depuis l'URL
+  useEffect(() => {
+    if (list.length === 0) return;
+    
+    // Vérifier si un ID est passé dans l'URL
+    const urlId = searchParams.get('id');
+    if (urlId) {
+      const notifId = parseInt(urlId, 10);
+      const exists = list.find(n => n.idNotification === notifId);
+      if (exists) {
+        setSelectedId(notifId);
+        // Marquer comme lu automatiquement
+        if (!readIds.has(notifId)) {
+          const nextRead = new Set(readIds);
+          nextRead.add(notifId);
+          setReadIds(nextRead);
+          saveReadIds(nextRead);
+        }
+        return;
+      }
+    }
+  }, [list, searchParams]);
 
   const handleSelect = (id) => {
     setSelectedId(id);

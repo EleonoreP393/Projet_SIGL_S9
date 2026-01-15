@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState, useEffect }  from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
 import { notifications } from "../data/notifications";
@@ -211,11 +211,50 @@ function Home() {
       return new Set();
     }
   }
-// Filtrer uniquement les nouvelles (isNew ET pas dans lus)
+
+
+//Récupération des notifs depuis la BDD
+const [notifications, setNotifications] = useState([]);
+const [notificationsError, setNotificationsError] = useState(null);
+const [notificationsLoading, setNotificationsLoading] = useState(true);
+const [selectedId, setSelectedId] = useState(null);
+
+const idUtilisateur = currentUser?.id;
+
+// Récupération des notifications
+useEffect(() => {
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch("/api/searchNotificationsParUtilisateur", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idUtilisateur })
+      });
+      const strResponse = (await response.text()).toString();
+      const data = JSON.parse(strResponse);
+      if (data.success) {
+        setNotifications(data.notifications);
+      } else {
+        throw new Error(data.error || "Erreur lors du chargement des notifications.");
+      }
+    } catch (err) {
+      console.error("Erreur chargement notifications:", err);
+      setNotificationsError(err.message);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+  fetchNotifications();
+}, [idUtilisateur]);
+
+
+// Filtrer uniquement les nouvelles
   const readIds = getReadIds();
   const newNotifications = notifications
-    .map(n => ({ ...n, isNew: n.isNew && !readIds.has(n.id) }))
-    .filter(n => n.isNew);
+    .map(n => ({ ...n, lue: !readIds.has(n.idNotification) }))
+    .filter(n => n.lue);
+
+    localStorage.setItem("STARAC_DEBUG", JSON.stringify(newNotifications));
 
   return (
     <>
@@ -299,8 +338,12 @@ function Home() {
             <div className="notifications-list">
               {newNotifications.length > 0 ? (
                 newNotifications.map((notif) => (
-                  <div key={notif.id} className="notification-item new" title={notif.message}>
-                    <span className="notification-text">{notif.message}</span>
+                  <div key={notif.idNotification} className="notification-item new" title={notif.descriptionCourte}>
+                    <li key={'/notifications?id=${notif.idNotification}'} className="topnav-item">
+                      <Link to={`/notifications?id=${notif.idNotification}`} className="topnav-link">
+                        {notif.descriptionCourte}
+                      </Link>
+                    </li>
                   </div>
                 ))
               ) : (
