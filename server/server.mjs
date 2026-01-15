@@ -10,7 +10,7 @@ export const pool = mysql.createPool({
   password: process.env.DB_PASS || "0000",
   database: process.env.DB_NAME || "staracademy",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 20,
 });
 
 // 2) Importe les routes APRÈS l'export du pool
@@ -18,6 +18,17 @@ import loginRouter from "./api/login.route.mjs";
 import changePasswordRouter from "./api/changePassword.route.mjs";
 import compteRouter from "./api/compte.route.mjs";
 import evenementRouter from "./api/evenement.route.mjs";
+import contactRouter from "./api/contact.route.mjs";
+import apprentiRouter from "./api/apprenti.route.mjs";
+import coordinatriceRouter from "./api/coordinatrice.route.mjs";
+import juryRouter from "./api/jury.route.mjs";
+import tuteurRouter from "./api/tuteur.route.mjs";
+import maitreApprentissageRouter from "./api/maitreApprentissage.route.mjs";
+import promotionRouter from "./api/promotion.route.mjs";
+import entrepriseRouter from "./api/entreprise.route.mjs";
+import ecoleRouter from "./api/ecole.route.mjs";
+import livrableRouter from "./api/livrable.route.mjs";
+import notificationRouter from "./api/notification.route.mjs";
 
 const app = express();
 app.use(express.json());
@@ -28,6 +39,17 @@ app.use("/api", loginRouter);
 app.use("/api", changePasswordRouter);
 app.use("/api", compteRouter);
 app.use("/api", evenementRouter);
+app.use("/api", contactRouter);
+app.use("/api", apprentiRouter);
+app.use("/api", coordinatriceRouter);
+app.use("/api", juryRouter);
+app.use("/api", tuteurRouter);
+app.use("/api", maitreApprentissageRouter);
+app.use("/api", promotionRouter);
+app.use("/api", entrepriseRouter);
+app.use("/api", ecoleRouter);
+app.use("/api", livrableRouter);
+app.use("/api", notificationRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

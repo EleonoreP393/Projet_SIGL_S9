@@ -1225,7 +1225,13 @@ input {
   gap: 10px;
 }
 /* Carte pour les détails d'un seul utilisateur */
+.user-card-link {
+  text-decoration: none;
+  color: inherit; /* Hérite la couleur du texte parent (donc reste blanc) */
+  display: block; /* Fait que le lien prend toute la largeur/hauteur de la carte */
+}
 .user-details-card {
+  transition: transform 0.2s, border-color 0.2s;
   background-color: #000;
   padding: 12px;
   border-radius: 6px;
@@ -1238,6 +1244,10 @@ input {
 }
 .user-details-card p strong {
   color: #ffdd77;
+}
+.user-card-link:hover .user-details-card {
+  transform: translateY(-4px);
+  border-color: #ffc421;
 }
 .gestion-page-title {
   color: #000000;
@@ -1340,7 +1350,7 @@ input {
 /* Actions du modal (boutons) */
 .modal-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
   margin-top: 24px;
   padding-top: 16px;
@@ -1384,4 +1394,143 @@ input {
   align-items: center;
   /* S'assurer qu'il est au-dessus de tout le reste */
   z-index: 1000; /* Un nombre élevé pour garantir qu'il est sur la couche supérieure */
+}
+
+/* ================================== */
+/*         PAGE Détail                */
+/* ================================== */
+
+.detail-page-container {
+  width: 100%;
+  max-width: 800px; /* Limite la largeur pour une bonne lisibilité */
+  margin: 40px auto;
+  padding: 20px;
+}
+.saving_btn {
+  background-color: #000000;
+  color: #ffc421;
+  justify-content: center;
+  margin-top: 54px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: background-color 0.2s;
+}
+.add-contact-button {
+  background-color: #000000;
+  color: #ffc421;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  transition: background-color 0.2s;
+}
+.add-contact-button:hover {
+  background-color: #ffc421;
+  color: #000000;
+}
+.back-button {
+  background-color: #000000;
+  border: 1px solid #000000;
+  color: #ffc421;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+.saving_btn:hover {
+  background-color: #ffc421;
+  color: #000000;
+}
+.back-button:hover {
+  background-color: #ffc421;
+  color: #000000;
+}
+.user-edit-form, 
+.contacts-section {
+  background-color: #1a1a1a;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 40px;
+  border: 1px solid #444;
+}
+.user-edit-form h2, 
+.contacts-section h2 {
+  color: #ffc421;
+  margin-top: 0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.linked-infos-section {
+  margin-top: 24px;          /* espace au-dessus, sous les inputs */
+  padding-top: 16px;
+  border-top: 1px solid #444; /* petite séparation visuelle */
+}
+.linked-infos-section h3 {
+  margin: 0 0 12px 0;
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  color: #ffc421;
+}
+.linked-infos-section p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.linked-infos-section strong {
+  color: #ffdd77;
+}
+
+.edit-page-layout {
+  display: flex; /* Active Flexbox */
+  flex-direction: row; /* Aligne les enfants horizontalement (par défaut, mais c'est bien de le préciser) */
+  gap: 30px; /* Ajoute un espace de 30px entre les deux blocs */
+  align-items: flex-start; /* Aligne les blocs en haut, au cas où l'un serait plus grand que l'autre */
+}
+/* On donne à chaque bloc une part égale de l'espace disponible */
+.edit-page-layout > .user-edit-form,
+.edit-page-layout > .contacts-section {
+  flex: 1; /* Chaque enfant prendra une fraction égale de l'espace (ex: 50% pour 2 enfants) */
+  min-width: 0; /* Empêche les problèmes de débordement avec flexbox */
+}
+/* La carte individuelle pour un contact */
+.contact-details-card {
+  background-color: #0d0d0d; /* Un noir légèrement plus clair pour se distinguer du fond */
+  border: 1px solid #333;   /* Bordure subtile */
+  border-radius: 10px;        /* Coins arrondis */
+  padding: 16px;              /* Espace à l'intérieur de la carte */
+  margin-bottom: 15px;        /* Espace de 15px entre chaque carte de contact */
+  transition: border-color 0.2s, background-color 0.2s; /* Effet de transition doux */
+}
+/* Le titre du rôle dans la carte (ex: "Tuteur") */
+.contact-details-card h3 {
+  color: #ffc421; /* Couleur dorée pour le rôle */
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #444; /* Petite ligne de séparation */
+  padding-bottom: 8px;
+}
+/* Les paragraphes contenant les infos du contact */
+.contact-details-card p {
+  margin: 4px 0; /* Réduit l'espace vertical entre les lignes d'info */
+  font-size: 0.95rem;
+  color: #ccc;
+}
+/* --- RESPONSIVE DESIGN : POUR LES PETITS ÉCRANS --- */
+/* Si l'écran fait moins de 900px de large (taille tablette/mobile) */
+@media (max-width: 900px) {
+  .edit-page-layout {
+    flex-direction: column; /* On change la direction pour que les blocs s'empilent verticalement */
+  }
 }

@@ -3,6 +3,17 @@ import { pool } from "../connectToUser.mjs";
 
 const router = express.Router();
 
+//Chiffrement du mot de passe
+class Sha256Hash {
+    static async encode(input) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+}
+
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body || {};
@@ -10,9 +21,12 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ success: false, error: "Champs requis" });
     }
 
+    //Chiffrement du mot de passe pour comparaison avec la valeur stockée en base de données
+    let encryptedPassword = await Sha256Hash.encode(password);
+
     const [rows] = await pool.query(
       "SELECT idUtilisateur, nomUtilisateur, motDePasse, idRole FROM utilisateur WHERE nomUtilisateur = ? AND motDePasse = ?",
-      [username, password]
+      [username, encryptedPassword]
     );
     if (rows.length === 0) {
       return res.status(401).json({ success: false, error: "Identifiants invalides" });

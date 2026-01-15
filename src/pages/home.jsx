@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect }  from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
-import { Link, useNavigate} from "react-router-dom";
+import { notifications } from "../data/notifications";
+import { Link, useNavigate } from "react-router-dom";
 
 function Home() {
   const navigate = useNavigate();
