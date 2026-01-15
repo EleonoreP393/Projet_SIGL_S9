@@ -275,10 +275,11 @@ CREATE TABLE `notification` (
   `descriptionCourte` varchar(1000) DEFAULT NULL,
   `lienIcone` varchar(1000) DEFAULT NULL,
   `lue` tinyint(1) DEFAULT NULL,
+  `dateReception` datetime DEFAULT NULL,
   PRIMARY KEY (`idNotification`),
   KEY `idUtilisateur` (`idUtilisateur`),
   CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`idUtilisateur`) REFERENCES `utilisateur` (`idUtilisateur`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -287,6 +288,7 @@ CREATE TABLE `notification` (
 
 LOCK TABLES `notification` WRITE;
 /*!40000 ALTER TABLE `notification` DISABLE KEYS */;
+INSERT INTO `notification` VALUES (1,1,'Long','Court',NULL,0,NULL),(2,1,'Long','Court',NULL,1,NULL);
 /*!40000 ALTER TABLE `notification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -411,7 +413,7 @@ CREATE TABLE `utilisateur` (
   `idRole` int DEFAULT NULL,
   `telUtilisateur` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`idUtilisateur`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -420,7 +422,7 @@ CREATE TABLE `utilisateur` (
 
 LOCK TABLES `utilisateur` WRITE;
 /*!40000 ALTER TABLE `utilisateur` DISABLE KEYS */;
-INSERT INTO `utilisateur` VALUES (1,'Test','Testo','test@test.fr','testpwd',2,NULL);
+INSERT INTO `utilisateur` VALUES (1,'Test','Testo','test@test.fr','ee5990188fef7bca82a142eb08dc17068593e3bfab0a9caacf2705ac763b46e4',2,NULL),(8,'Tori','Oroto','nomail@mail.com','95e495d9c57d1e80d024e06eeef86b5a108f45454b19ee25110a4710d6f21389',5,NULL);
 /*!40000 ALTER TABLE `utilisateur` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -433,4 +435,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-18 16:28:34
+-- Dump completed on 2026-01-12 11:22:41

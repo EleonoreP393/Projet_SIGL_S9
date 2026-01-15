@@ -12,7 +12,7 @@ router.post("/createEntreprise", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO entreprise (nom, siret, adresse) values ('" + nom + "', '" + siret + "', '" + adresse + "');"
+            "INSERT INTO entreprise (nom, siret, adresse) VALUES (?, ?, ?)",[nom, siret,adresse]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création de l'entreprise." });
@@ -33,7 +33,7 @@ router.post("/searchAllEntreprise", async (req, res) => {
             "SELECT * FROM Entreprise;"
         );
 
-        return res.json({success: true, apprenti: result});
+        return res.json({success: true, entreprises: result});
 
     }catch(e){
         console.error(e);
@@ -93,7 +93,7 @@ router.post("/deleteEntreprise", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "DELETE FROM Entreprise WHERE idEntreprise='" + idEntreprise +"';"
+            "DELETE FROM Entreprise WHERE idEntreprise= ?", [idEntreprise]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la suppression de l'entreprise."});
