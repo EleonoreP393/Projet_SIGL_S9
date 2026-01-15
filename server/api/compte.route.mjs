@@ -12,7 +12,7 @@ router.post("/createCompte", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO utilisateur (nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole) VALUES (?,?,?,?,?)", [nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole]
+            "INSERT INTO utilisateur (nomUtilisateur, prenomUtilisateur, email, motDePasse, idRole) VALUES ('" + nomUtilisateur + "', '" + prenomUtilisateur + "', '" + email + "', '" + motDePasse + "', " + idRole + ");"
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création du compte." });
@@ -33,7 +33,7 @@ router.post("/searchAllCompte", async (req, res) => {
             "SELECT * FROM Utilisateur;"
         );
 
-        return res.json({success: true, utilisateurs: result});
+        return res.json({success: true});
 
     }catch(e){
         console.error(e);
@@ -86,4 +86,5 @@ router.post("/deleteCompte", async (req, res) => {
         return res.status(500).json({ success: false, error: "Erreur serveur" });
     }
 });
+
 export default router;

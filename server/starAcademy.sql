@@ -51,103 +51,29 @@ INSERT INTO `apprenti` VALUES (1,1,1,1,1,1);
 UNLOCK TABLES;
 
 --
--- Table structure for table `champslivrable`
+-- Table structure for table `contact`
 --
 
-DROP TABLE IF EXISTS `champslivrable`;
+DROP TABLE IF EXISTS `contact`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `champslivrable` (
-  `idchamps` int NOT NULL AUTO_INCREMENT,
-  `idlivrable` int DEFAULT NULL,
-  `idmodelechamps` int DEFAULT NULL,
-  PRIMARY KEY (`idchamps`),
-  KEY `idlivrable` (`idlivrable`),
-  CONSTRAINT `champslivrable_ibfk_1` FOREIGN KEY (`idlivrable`) REFERENCES `livrable` (`idLivrable`)
+CREATE TABLE `contact` (
+  `idcontact` int DEFAULT NULL,
+  `idalternant` int DEFAULT NULL,
+  KEY `idUtilisateur_idx` (`idcontact`),
+  KEY `idAlternant_fk_idx` (`idalternant`),
+  CONSTRAINT `idAlternant_fk` FOREIGN KEY (`idalternant`) REFERENCES `apprenti` (`idUtilisateur`),
+  CONSTRAINT `idContact_fk` FOREIGN KEY (`idcontact`) REFERENCES `utilisateur` (`idUtilisateur`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `champslivrable`
+-- Dumping data for table `contact`
 --
 
-LOCK TABLES `champslivrable` WRITE;
-/*!40000 ALTER TABLE `champslivrable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `champslivrable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `champsmodelelivrable`
---
-
-DROP TABLE IF EXISTS `champsmodelelivrable`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `champsmodelelivrable` (
-  `idchampsmodelelivrable` int NOT NULL AUTO_INCREMENT,
-  `idmodelelivrable` int DEFAULT NULL,
-  `titre` varchar(50) DEFAULT NULL,
-  `role` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`idchampsmodelelivrable`),
-  KEY `idmodelelivrable` (`idmodelelivrable`),
-  CONSTRAINT `champsmodelelivrable_ibfk_1` FOREIGN KEY (`idmodelelivrable`) REFERENCES `modelelivrable` (`idmodelelivrable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `champsmodelelivrable`
---
-
-LOCK TABLES `champsmodelelivrable` WRITE;
-/*!40000 ALTER TABLE `champsmodelelivrable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `champsmodelelivrable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `commentaire`
---
-
-DROP TABLE IF EXISTS `commentaire`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `commentaire` (
-  `texte` varchar(500) DEFAULT NULL,
-  `idChamps` int DEFAULT NULL,
-  KEY `idChamps` (`idChamps`),
-  CONSTRAINT `commentaire_ibfk_1` FOREIGN KEY (`idChamps`) REFERENCES `champslivrable` (`idchamps`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `commentaire`
---
-
-LOCK TABLES `commentaire` WRITE;
-/*!40000 ALTER TABLE `commentaire` DISABLE KEYS */;
-/*!40000 ALTER TABLE `commentaire` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `commentairemodele`
---
-
-DROP TABLE IF EXISTS `commentairemodele`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `commentairemodele` (
-  `idChampsModele` int DEFAULT NULL,
-  KEY `idChampsModele` (`idChampsModele`),
-  CONSTRAINT `commentairemodele_ibfk_1` FOREIGN KEY (`idChampsModele`) REFERENCES `champsmodelelivrable` (`idchampsmodelelivrable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `commentairemodele`
---
-
-LOCK TABLES `commentairemodele` WRITE;
-/*!40000 ALTER TABLE `commentairemodele` DISABLE KEYS */;
-/*!40000 ALTER TABLE `commentairemodele` ENABLE KEYS */;
+LOCK TABLES `contact` WRITE;
+/*!40000 ALTER TABLE `contact` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contact` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -174,78 +100,6 @@ LOCK TABLES `coordinatrice` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `datemodele`
---
-
-DROP TABLE IF EXISTS `datemodele`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `datemodele` (
-  `idChampsModele` int DEFAULT NULL,
-  KEY `idChampsModele` (`idChampsModele`),
-  CONSTRAINT `datemodele_ibfk_1` FOREIGN KEY (`idChampsModele`) REFERENCES `champsmodelelivrable` (`idchampsmodelelivrable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `datemodele`
---
-
-LOCK TABLES `datemodele` WRITE;
-/*!40000 ALTER TABLE `datemodele` DISABLE KEYS */;
-/*!40000 ALTER TABLE `datemodele` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `document`
---
-
-DROP TABLE IF EXISTS `document`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `document` (
-  `titreDocument` varchar(100) DEFAULT NULL,
-  `titreBDD` varchar(100) DEFAULT NULL,
-  `idChamps` int DEFAULT NULL,
-  KEY `idChamps` (`idChamps`),
-  CONSTRAINT `document_ibfk_1` FOREIGN KEY (`idChamps`) REFERENCES `champslivrable` (`idchamps`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `document`
---
-
-LOCK TABLES `document` WRITE;
-/*!40000 ALTER TABLE `document` DISABLE KEYS */;
-/*!40000 ALTER TABLE `document` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `documentmodele`
---
-
-DROP TABLE IF EXISTS `documentmodele`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `documentmodele` (
-  `idChampsModele` int DEFAULT NULL,
-  `extension` varchar(100) DEFAULT NULL,
-  KEY `idChampsModele` (`idChampsModele`),
-  CONSTRAINT `documentmodele_ibfk_1` FOREIGN KEY (`idChampsModele`) REFERENCES `champsmodelelivrable` (`idchampsmodelelivrable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `documentmodele`
---
-
-LOCK TABLES `documentmodele` WRITE;
-/*!40000 ALTER TABLE `documentmodele` DISABLE KEYS */;
-/*!40000 ALTER TABLE `documentmodele` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `ecole`
 --
 
@@ -255,6 +109,7 @@ DROP TABLE IF EXISTS `ecole`;
 CREATE TABLE `ecole` (
   `idEcole` int NOT NULL AUTO_INCREMENT,
   `nomEcole` varchar(50) DEFAULT NULL,
+  `adresseEcole` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`idEcole`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -266,30 +121,6 @@ CREATE TABLE `ecole` (
 LOCK TABLES `ecole` WRITE;
 /*!40000 ALTER TABLE `ecole` DISABLE KEYS */;
 /*!40000 ALTER TABLE `ecole` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `entreededate`
---
-
-DROP TABLE IF EXISTS `entreededate`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `entreededate` (
-  `datevaleur` date DEFAULT NULL,
-  `idChamps` int DEFAULT NULL,
-  KEY `idChamps` (`idChamps`),
-  CONSTRAINT `entreededate_ibfk_1` FOREIGN KEY (`idChamps`) REFERENCES `champslivrable` (`idchamps`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `entreededate`
---
-
-LOCK TABLES `entreededate` WRITE;
-/*!40000 ALTER TABLE `entreededate` DISABLE KEYS */;
-/*!40000 ALTER TABLE `entreededate` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -335,7 +166,7 @@ CREATE TABLE `evenement` (
   `heure` int DEFAULT NULL,
   `minutes` int DEFAULT NULL,
   PRIMARY KEY (`idEvenement`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -344,7 +175,7 @@ CREATE TABLE `evenement` (
 
 LOCK TABLES `evenement` WRITE;
 /*!40000 ALTER TABLE `evenement` DISABLE KEYS */;
-INSERT INTO `evenement` VALUES (1,'Test','Test','Test','2018-09-24','Test',NULL,NULL),(2,'Test','Test','Test','2018-09-24','Test',NULL,NULL),(3,'Test','Test','Test','2018-09-24','Test',12,9);
+INSERT INTO `evenement` VALUES (1,'Test','Test','Test','2018-09-24','Test',NULL,NULL),(2,'Test','Test','Test','2018-09-24','Test',NULL,NULL),(3,'Test','Test','Test','2018-09-24','Test',12,9),(4,'Collégiale','Chanter avec tous les élèves de la promo','Colisée','2027-10-07','Concert',18,30),(5,'Duo','Chanter avec un autre élève','Place du marché','2027-08-06','Concert',12,0),(6,'Ecriture de paroles','Ecrire les paroles d\'une chanson à sortir','Studio de répétition','2027-09-01','Atelier',10,30),(7,'Epreuve de danse','Effectuer la chorégraphie apprise cette semaine','Salle de sport','2027-05-05','Atelier',14,15),(8,'Epreuve de chant','Chanter devant le jury','Studio','2027-05-07','Audition',9,0),(9,'Scène Ouverte','Préparer une chanson au choix à chanter durant la soirée','Bar de jeux','2027-06-21','Scène Ouverte',21,0),(10,'Intervention d\'une chanteuse connue','Racontera son parcours et donnera des conseils','AMphithéâtre','2027-10-01','Master Class',10,30),(11,'Entrainement de danse','Avec le prof de danse','Salle de sport','2027-01-10','Concert',11,0);
 /*!40000 ALTER TABLE `evenement` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -382,10 +213,15 @@ DROP TABLE IF EXISTS `livrable`;
 CREATE TABLE `livrable` (
   `idLivrable` int NOT NULL AUTO_INCREMENT,
   `idapprenti` int DEFAULT NULL,
-  `idmodelelivrable` int DEFAULT NULL,
+  `idPromotion` int DEFAULT NULL,
+  `titre` varchar(200) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `dateOuverture` date DEFAULT NULL,
+  `dateFermeture` date DEFAULT NULL,
+  `idModele` int DEFAULT NULL,
   PRIMARY KEY (`idLivrable`),
-  KEY `idmodelelivrable` (`idmodelelivrable`),
-  CONSTRAINT `livrable_ibfk_1` FOREIGN KEY (`idmodelelivrable`) REFERENCES `modelelivrable` (`idmodelelivrable`)
+  KEY `idPromotion` (`idPromotion`),
+  CONSTRAINT `livrable_ibfk_1` FOREIGN KEY (`idPromotion`) REFERENCES `promotion` (`idPromotion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -423,80 +259,6 @@ LOCK TABLES `maitreapprentissage` WRITE;
 /*!40000 ALTER TABLE `maitreapprentissage` DISABLE KEYS */;
 INSERT INTO `maitreapprentissage` VALUES (1,1);
 /*!40000 ALTER TABLE `maitreapprentissage` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `modelelivrable`
---
-
-DROP TABLE IF EXISTS `modelelivrable`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `modelelivrable` (
-  `idmodelelivrable` int NOT NULL,
-  `titre` varchar(100) DEFAULT NULL,
-  `description` varchar(300) DEFAULT NULL,
-  `dateOuverture` date DEFAULT NULL,
-  `dateFermeture` date DEFAULT NULL,
-  PRIMARY KEY (`idmodelelivrable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `modelelivrable`
---
-
-LOCK TABLES `modelelivrable` WRITE;
-/*!40000 ALTER TABLE `modelelivrable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `modelelivrable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `note`
---
-
-DROP TABLE IF EXISTS `note`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `note` (
-  `note` int DEFAULT NULL,
-  `idChamps` int DEFAULT NULL,
-  KEY `idChamps` (`idChamps`),
-  CONSTRAINT `note_ibfk_1` FOREIGN KEY (`idChamps`) REFERENCES `champslivrable` (`idchamps`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `note`
---
-
-LOCK TABLES `note` WRITE;
-/*!40000 ALTER TABLE `note` DISABLE KEYS */;
-/*!40000 ALTER TABLE `note` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `notemodele`
---
-
-DROP TABLE IF EXISTS `notemodele`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notemodele` (
-  `idChampsModele` int DEFAULT NULL,
-  `bareme` int DEFAULT NULL,
-  KEY `idChampsModele` (`idChampsModele`),
-  CONSTRAINT `notemodele_ibfk_1` FOREIGN KEY (`idChampsModele`) REFERENCES `champsmodelelivrable` (`idchampsmodelelivrable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `notemodele`
---
-
-LOCK TABLES `notemodele` WRITE;
-/*!40000 ALTER TABLE `notemodele` DISABLE KEYS */;
-/*!40000 ALTER TABLE `notemodele` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -647,6 +409,7 @@ CREATE TABLE `utilisateur` (
   `email` varchar(50) DEFAULT NULL,
   `motDePasse` varchar(100) DEFAULT NULL,
   `idRole` int DEFAULT NULL,
+  `telUtilisateur` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`idUtilisateur`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -657,7 +420,7 @@ CREATE TABLE `utilisateur` (
 
 LOCK TABLES `utilisateur` WRITE;
 /*!40000 ALTER TABLE `utilisateur` DISABLE KEYS */;
-INSERT INTO `utilisateur` VALUES (1,'Test','Testo','test@test.fr','testpwd',2);
+INSERT INTO `utilisateur` VALUES (1,'Test','Testo','test@test.fr','testpwd',2,NULL);
 /*!40000 ALTER TABLE `utilisateur` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -670,4 +433,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-21  9:38:37
+-- Dump completed on 2025-12-18 16:28:34
