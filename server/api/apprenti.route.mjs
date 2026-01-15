@@ -119,6 +119,7 @@ router.post("/searchApprentisForTuteur", async (req, res) => {
         console.error(e);
         return res.status(500).json({ success: false, error: "Erreur serveur" });
     }
+});
 router.post("/getEntrepriseEtEcoleForApprenti", async (req, res) => {
   try {
     const { idUtilisateur } = req.body || {};
