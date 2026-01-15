@@ -213,11 +213,15 @@ DROP TABLE IF EXISTS `livrable`;
 CREATE TABLE `livrable` (
   `idLivrable` int NOT NULL AUTO_INCREMENT,
   `idapprenti` int DEFAULT NULL,
+  `idPromotion` int DEFAULT NULL,
   `titre` varchar(200) DEFAULT NULL,
   `description` varchar(500) DEFAULT NULL,
   `dateOuverture` date DEFAULT NULL,
   `dateFermeture` date DEFAULT NULL,
-  PRIMARY KEY (`idLivrable`)
+  `idModele` int DEFAULT NULL,
+  PRIMARY KEY (`idLivrable`),
+  KEY `idPromotion` (`idPromotion`),
+  CONSTRAINT `livrable_ibfk_1` FOREIGN KEY (`idPromotion`) REFERENCES `promotion` (`idPromotion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

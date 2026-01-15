@@ -30,16 +30,10 @@ router.post("/searchAllTuteur", async (req, res) => {
     try{
 
         const [result] = await pool.execute(
-          `SELECT 
-             tp.idUtilisateur, 
-             u.nomUtilisateur AS nom,
-             u.prenomUtilisateur AS prenom,
-             u.email
-           FROM tuteur tp
-           JOIN utilisateur u ON u.idUtilisateur = tp.idUtilisateur`
+            "SELECT * FROM Tuteur INNER JOIN Utilisateur ON Utilisateur.idUtilisateur = Tuteur.idUtilisateur;"
         );
 
-        return res.json({success: true, tps: result});
+        return res.json({success: true, tuteur: result});
 
     }catch(e){
         console.error(e);

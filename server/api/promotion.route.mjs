@@ -12,7 +12,7 @@ router.post("/createPromotion", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO promotion (nomPromotion, annee, idEcole) VALUES (?, ?, ?)", [nomPromotion, annee, idEcole]
+            "INSERT INTO promotion (nomPromotion, annee, idEcole) values ('" + nomPromotion + "', '" + annee + "', '" + idEcole + "');"
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création de la promotion." });
@@ -93,7 +93,7 @@ router.post("/deletePromotion", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "DELETE FROM Promotion WHERE idPromotion = ?", [idPromotion]
+            "DELETE FROM Promotion WHERE idPromotion='" + idPromotion +"';"
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la suppression de la promotion."});

@@ -34,6 +34,9 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
+// Servir les fichiers uploadés en tant que fichiers statiques
+app.use("/uploads", express.static("uploads"));
+
 // 3) Monte les routes
 app.use("/api", loginRouter);
 app.use("/api", changePasswordRouter);

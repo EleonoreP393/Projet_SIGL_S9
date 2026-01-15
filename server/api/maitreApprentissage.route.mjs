@@ -30,14 +30,7 @@ router.post("/searchAllMA", async (req, res) => {
     try{
 
         const [result] = await pool.execute(
-          `SELECT 
-             ma.idUtilisateur,          -- id du maître d'apprentissage (côté table MaitreApprentissage)
-             ma.idEntreprise,           -- entreprise liée au MA
-             u.nomUtilisateur AS nom,   -- nom du MA (depuis utilisateur)
-             u.prenomUtilisateur AS prenom, -- prénom du MA
-             u.email                    -- (optionnel) email du MA
-           FROM MaitreApprentissage ma
-           JOIN utilisateur u ON u.idUtilisateur = ma.idUtilisateur`
+            "SELECT * FROM MaitreApprentissage;"
         );
 
         return res.json({success: true, maitreApprentissage: result});

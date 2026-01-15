@@ -87,6 +87,38 @@ router.post("/deleteApprenti", async (req, res) => {
     }
 });
 
+router.post("/searchApprentisForTuteur", async (req, res) => {
+    try{
+
+        const {idUtilisateur, userRole} = req.body || {};
+        if(!idUtilisateur || !userRole){
+            return res.status(400).json({ success: false, error: "ID utilisateur et rôle requis" });
+        }
+
+        let whereClause = "";
+        
+        // Détermine la colonne à filtrer selon le rôle
+        if (userRole === 3) {
+            whereClause = "a.idtp = ?";
+        } else if (userRole === 4) {
+            whereClause = "a.idjury = ?";
+        } else if (userRole === 5) {
+            whereClause = "a.idma = ?";
+        } else {
+            return res.status(400).json({ success: false, error: "Rôle non valide" });
+        }
+
+        const [result] = await pool.execute(
+            `SELECT a.idUtilisateur, u.nomUtilisateur as nomUtilisateur, u.prenomUtilisateur as prenomUtilisateur FROM apprenti a JOIN utilisateur u ON a.idUtilisateur = u.idUtilisateur WHERE ${whereClause};`,
+            [idUtilisateur]
+        );
+
+        return res.json({success: true, apprentis: result});
+
+    }catch(e){
+        console.error(e);
+        return res.status(500).json({ success: false, error: "Erreur serveur" });
+    }
 router.post("/getEntrepriseEtEcoleForApprenti", async (req, res) => {
   try {
     const { idUtilisateur } = req.body || {};
