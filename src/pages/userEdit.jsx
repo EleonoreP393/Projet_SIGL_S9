@@ -38,9 +38,79 @@ function UserEdit() {
         role: 'Tuteur' // Rôle par défaut
     });
 
+    const [entreprise, setEntreprise] = useState(null); // entreprise liée à l’utilisateur
+    const [ecole, setEcole] = useState(null);           // école liée à l’utilisateur
+    useEffect(() => {
+        console.log("DEBUG user:", user);
+        console.log("DEBUG userId (URL):", userId, "type:", typeof userId);
+        console.log("DEBUG idRole:", user.idRole, "type:", typeof user.idRole);
+    }, [user, userId]);
+
     useEffect(() => {
         fetchUserContacts();
     }, [userId]);
+
+    useEffect(() => {
+        const loadLinkedInfos = async () => {
+            console.log("loadLinkedInfos called with:", {
+              userId,
+              idRole: user.idRole,
+              roleName: roleIdToName[user.idRole],
+            });
+            if (!userId || !user.idRole) return;
+
+            const roleName = roleIdToName[user.idRole];
+
+            try {
+              // Apprenti : entreprise + école
+              if (roleName === "Apprenti") {
+                const res = await fetch("/api/getEntrepriseEtEcoleForApprenti", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ idUtilisateur: userId }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                  setEntreprise(data.entreprise || null);
+                  setEcole(data.ecole || null);
+                } else {
+                  setEntreprise(null);
+                  setEcole(null);
+                }
+              }
+          
+              // MaitreApprentissage : entreprise uniquement
+              if (roleName === "MaitreApprentissage") {
+                console.log("Role is MA, calling /getEntrepriseForMA");
+                const res = await fetch("/api/getEntrepriseForMA", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ idUtilisateur: userId }),
+                });
+                console.log("getEntrepriseForMA status:", res.status);
+                const data = await res.json();
+                console.log("getEntrepriseForMA data:", data);
+                if (data.success) {
+                  setEntreprise(data.entreprise || null);
+                } else {
+                  setEntreprise(null);
+                }
+                setEcole(null);
+              }
+          
+              // Autres rôles : rien de particulier
+              if (roleName !== "Apprenti" && roleName !== "MaitreApprentissage") {
+                setEntreprise(null);
+                setEcole(null);
+              }
+            } catch (err) {
+              console.error("Erreur chargement infos liées:", err);
+              setEntreprise(null);
+              setEcole(null);
+            }
+        };
+        loadLinkedInfos();
+    }, [userId, user.idRole]);
 
     const fetchUserContacts = async () => {
         try {
@@ -129,6 +199,7 @@ function UserEdit() {
     };
     const handleNewContactChange = (e) => {
         const { name, value } = e.target;
+        console.log("handleUserChange", name, value);
         setNewContact((prev) => ({ ...prev, [name]: value }));
     };
     const handleUserSubmit = (e) => {
@@ -177,6 +248,43 @@ function UserEdit() {
                                 <option key={id} value={id}>{name}</option>
                             ))}
                         </select>
+                    </div>
+                    {/* --- SECTION INFOS LIÉES POUR APPRENTI / MA --- */}
+                    <div className="linked-infos-section">
+                      <p>
+                        <strong>Rôle :</strong>{" "}
+                        {roleIdToName[user.idRole] || "N/A"}
+                      </p>
+                      {/* Apprenti : entreprise + école */}
+                      {roleIdToName[user.idRole] === "Apprenti" && (
+                        <>
+                          <p>
+                            <strong>Entreprise :</strong>{" "}
+                            {entreprise ? entreprise.nom : "Aucune entreprise renseignée"}
+                          </p>
+                          <p>
+                            <strong>École :</strong>{" "}
+                            {ecole ? (ecole.nomEcole || ecole.nom) : "Aucune école renseignée"}
+                          </p>
+                        </>
+                      )}
+                      {/* MaitreApprentissage : entreprise uniquement */}
+                      {roleIdToName[user.idRole] === "MaitreApprentissage" && (
+                        <>
+                          <p>
+                            <strong>Entreprise :</strong>{" "}
+                            {entreprise ? entreprise.nom : "Aucune entreprise renseignée"}
+                          </p>
+                          <p>
+                            <strong>Adresse :</strong>{" "}
+                            {entreprise ? entreprise.adresse : "Adresse non renseignée"}
+                          </p>
+                          <p>
+                            <strong>SIRET :</strong>{" "}
+                            {entreprise ? entreprise.siret : "SIRET non renseigné"}
+                          </p>
+                        </>
+                      )}
                     </div>
                         
                     <button type="submit" className="saving_btn">Sauvegarder les modifications</button>

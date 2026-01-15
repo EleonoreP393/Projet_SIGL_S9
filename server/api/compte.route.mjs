@@ -46,13 +46,14 @@ router.post("/searchAllCompte", async (req, res) => {
 router.post("/updateCompte", async (req, res) => {
     try{
 
-        const {nomUtilisateur, prenomUtilisateur, email} = req.body || {};
-        if(!nomUtilisateur || !prenomUtilisateur || !email){
+        const {idUtilisateur, nomUtilisateur, prenomUtilisateur, email, idRole} = req.body || {};
+        if(!idUtilisateur || !nomUtilisateur || !prenomUtilisateur || !email || !idRole){
             return res.status(400).json({ success: false, error: "Champs requis" });
         }
 
         const [result] = await pool.execute(
-            "UPDATE utilisateur SET nomUtilisateur='" + nomUtilisateur + "', prenomUtilisateur='" + prenomUtilisateur + "', email='" + email + "' WHERE idUtilisateur=" + idUtilisateur +";"
+            "UPDATE utilisateur SET nomUtilisateur = ?, prenomUtilisateur = ?, email = ?, idRole = ? WHERE idUtilisateur = ?",
+            [nomUtilisateur, prenomUtilisateur, email, idRole, idUtilisateur]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la modification du compte."});

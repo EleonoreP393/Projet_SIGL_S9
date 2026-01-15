@@ -57,6 +57,23 @@ function Gestion() {
     adresse: "",
   });
 
+  // Données app spécifiques si le nouveau compte est un Apprenti
+  const [newApprenti, setNewApprenti] = useState({
+    idPromotion: "",
+    idEntreprise: "",
+    idMa: "",
+    idJury: "",
+    idTp: "",
+  });
+  // Données spécifiques si le nouveau compte est un Maître d'apprentissage
+  const [newMaitre, setNewMaitre] = useState({
+    idUtilisateur: "",
+    idEntreprise: "",
+  });
+  const [jurys, setJurys] = useState([]);
+  const [maitre, setMaitres] = useState([]);
+  const [tps, setTps] = useState([]);
+
   // --- RÉCUPÉRATION ET GROUPEMENT DES DONNÉES ---
   useEffect(() => {
         const fetchUsers = async () => {
@@ -89,7 +106,7 @@ function Gestion() {
         setGroupedUsers(groups);
     }, [users]);
   
-    useEffect(() => {
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch('/api/searchAllCompte', { method: 'POST' });
@@ -119,20 +136,20 @@ function Gestion() {
     };
 
     const fetchEcoles = async () => {
-    try {
-      const response = await fetch("/api/searchAllEcole", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setEcoles(data.ecoles || []);
+      try {
+        const response = await fetch("/api/searchAllEcole", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        const data = await response.json();
+        if (data.success) {
+          setEcoles(data.ecoles || []);
+        }
+      } catch (err) {
+        console.error("Erreur chargement écoles:", err);
       }
-    } catch (err) {
-      console.error("Erreur chargement écoles:", err);
-    }
-  };
+    };
 
     const fetchEntreprises = async () => {
       try {
@@ -146,10 +163,51 @@ function Gestion() {
       }
     };
 
+    const fetchMaitres = async () => {
+    try {
+      const res = await fetch("/api/searchAllMA", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMaitres(data.maitreApprentissage || []);
+      } else {
+        console.error("Erreur chargement maîtres d'apprentissage:", data.error);
+      }
+    } catch (err) {
+      console.error("Erreur chargement maîtres:", err);
+    }
+  };
+  const fetchJurys = async () => {
+    try {
+      const res = await fetch("/api/searchAllJury", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success) setJurys(data.jurys || []);
+    } catch (err) {
+      console.error("Erreur chargement jurys:", err);
+    }
+  };
+  const fetchTps = async () => {
+    try {
+      const res = await fetch("/api/searchAllTuteur", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success) setTps(data.tps || []);
+    } catch (err) {
+      console.error("Erreur chargement TPs:", err);
+    }
+  };
+
     fetchUsers();
     fetchPromotions();
     fetchEcoles();
     fetchEntreprises();
+    fetchMaitres();
+    fetchJurys();
+    fetchTps();
   }, []);
 
   // --- LOGIQUE POUR LES ACTIONS ---
@@ -211,17 +269,23 @@ function Gestion() {
       if (roleName === "Apprenti") {
         const apprentiPayload = {
           idUtilisateur: newUserId,
-          idPromotion: 1,
-          idEntreprise: 1,
-          idMa: 1,
-          idJury: 1,
-          idTp: 1,
+          idPromotion: newApprenti.idPromotion,
+          idEntreprise: newApprenti.idEntreprise,
+          idMa: newApprenti.idMa,
+          idJury: newApprenti.idJury,
+          idTp: newApprenti.idTp,
         };
-        await fetch("/api/createApprenti", {
+
+        console.log(">>> payload createApprenti:", apprentiPayload);
+        const resApprenti = await fetch("/api/createApprenti", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(apprentiPayload),
         });
+        const dataApprenti = await resApprenti.json();
+        if (!dataApprenti.success) {
+          throw new Error(dataApprenti.error || "Erreur lors de la création de l'apprenti.");
+        }
       } else if (roleName === "Jury") {
         const juryPayload = {
           idUtilisateur: newUserId,
@@ -252,12 +316,17 @@ function Gestion() {
       } else if (roleName === "Maitre Apprentissage") {
         const maitreapprentissagePayload = {
           idUtilisateur: newUserId,
+          idEntreprise: newMaitre.idEntreprise,
         };
-        await fetch("/api/createMA", {
+        const resMA = await fetch("/api/createMA", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(maitreapprentissagePayload),
+          body: JSON.stringify({ idUtilisateur: newUserId, idEntreprise: newMaitre.idEntreprise }),
         });
+        const dataMA = await resMA.json();
+        if (!dataMA.success) {
+          throw new Error(dataMA.error || "Erreur lors de la création du maître d'apprentissage")
+        }
       }
 
       // 3) Recharger la liste des comptes
@@ -276,7 +345,16 @@ function Gestion() {
         motDePasse: "",
         roleName: "Apprenti",
       });
-
+      setNewApprenti({
+        idPromotion: "",
+        idEntreprise: "",
+        idMa: "",
+        idJury: "",
+        idTp: "",
+      });
+      setNewMaitre({
+        idEntreprise: "",
+      });
     } catch (err) {
       alert(`Erreur lors de la création: ${err.message}`);
     }
@@ -444,6 +522,16 @@ function Gestion() {
     } catch (err) {
       alert(`Erreur lors de la suppression de l'entreprise: ${err.message}`);
     }
+  };
+
+  const handleNewApprentiChange = (e) => {
+    const { name, value } = e.target;
+    setNewApprenti(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleNewMaitreChange = (e) => {
+    const { name, value } = e.target;
+    setNewMaitre(prev => ({ ...prev, [name]: value }));
   };
 
 
@@ -682,6 +770,116 @@ function Gestion() {
                     <option>Maitre Apprentissage</option>
                   </select>
                 </div>
+                {/* Champs spécifiques si on crée un Apprenti */}
+                {newUser.roleName === "Apprenti" && (
+                  <>
+                    <div className="form-group">
+                      <label>Promotion</label>
+                      <select
+                        name="idPromotion"
+                        value={newApprenti.idPromotion}
+                        onChange={handleNewApprentiChange}
+                        required
+                      >
+                        <option value="">-- Sélectionner --</option>
+                        {promotions.map((promo) => (
+                          <option key={promo.idPromotion} value={promo.idPromotion}>
+                            {promo.nomPromotion} ({promo.annee})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                      
+                    <div className="form-group">
+                      <label>Entreprise</label>
+                      <select
+                        name="idEntreprise"
+                        value={newApprenti.idEntreprise}
+                        onChange={handleNewApprentiChange}
+                        required
+                      >
+                        <option value="">-- Sélectionner --</option>
+                        {entreprises.map((ent) => (
+                          <option key={ent.idEntreprise} value={ent.idEntreprise}>
+                            {ent.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                      
+                    <div className="form-group">
+                      <label>Maître d'apprentissage</label>
+                      <select
+                        name="idMa"
+                        value={newApprenti.idMa}
+                        onChange={handleNewApprentiChange}
+                        required
+                      >
+                        <option value="">-- Sélectionner --</option>
+                        {maitre.map((ma) => (
+                          <option key={ma.idUtilisateur} value={ma.idUtilisateur}>
+                            {ma.prenom} {ma.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                      
+                    <div className="form-group">
+                      <label>Jury</label>
+                      <select
+                        name="idJury"
+                        value={newApprenti.idJury}
+                        onChange={handleNewApprentiChange}
+                        required
+                      >
+                        <option value="">-- Sélectionner --</option>
+                        {jurys.map((j) => (
+                          <option key={j.idUtilisateur} value={j.idUtilisateur}>
+                            {j.prenom} {j.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                      
+                    <div className="form-group">
+                      <label>Tuteur Pédagogique</label>
+                      <select
+                        name="idTp"
+                        value={newApprenti.idTp}
+                        onChange={handleNewApprentiChange}
+                        required
+                      >
+                        <option value="">-- Sélectionner --</option>
+                        {tps.map((tp) => (
+                          <option key={tp.idUtilisateur} value={tp.idUtilisateur}>
+                            {tp.prenom} {tp.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
+                {/* Champs spécifiques si on crée un Maître d'apprentissage */}
+                {newUser.roleName === "Maitre Apprentissage" && (
+                  <>
+                    <div className="form-group">
+                      <label>Entreprise</label>
+                      <select
+                        name="idEntreprise"
+                        value={newMaitre.idEntreprise}
+                        onChange={handleNewMaitreChange}
+                        required
+                      >
+                        {entreprises.map((ent) => (
+                          <option key={ent.idEntreprise} value={ent.idEntreprise}>
+                            {ent.nom}
+                          </option>
+                        ))}
+                        console.log("entreprises:", entreprises);
+                      </select>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn-secondary" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
