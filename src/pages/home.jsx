@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useMemo, useState, useEffect }  from "react";
 import "../style/style.css";
 import logo from "../assets/logo.png";
-import { notifications } from "../data/notifications";
-import { evenements } from "../data/evenements";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 
 function Home() {
   const navigate = useNavigate();
+
+  // --- ÉTAT POUR LES ÉVÉNEMENTS DE LA BDD ---
+  const [events, setEvents] = React.useState([]);
+  const [eventsError, setEventsError] = React.useState(null);
+  const [eventsLoading, setEventsLoading] = React.useState(true);
+
   // Contacts (plus tard depuis BDD) - si null ou undefined, ne s'affiche pas
   const contacts = [
     {
@@ -117,6 +121,27 @@ function Home() {
   ];
   const pagesToDisplay = userRole === 2 ? Pages : basePages;
 
+  // --- CHARGEMENT DES ÉVÉNEMENTS DEPUIS L'API ---
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("/api/searchAllEvenement", { method: "POST" });
+        const data = await response.json();
+        if (data.success) {
+          setEvents(data.evenements || []);
+        } else {
+          throw new Error(data.error || "Erreur lors du chargement des événements.");
+        }
+      } catch (err) {
+        console.error("Erreur chargement événements Home:", err);
+        setEventsError(err.message);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
   // Fonction pour calculer le statut automatiquement
   const getStatut = (dateOuverture, dateFermeture) => {
     const aujourdhui = new Date();
@@ -155,41 +180,80 @@ function Home() {
       (form.statut === 'ouvert' || form.statut === 'bientot_ferme')
     );
 
-// Filtre les événements à venir (pas encore passés)
-const evenementsAVenir = evenements
-  .filter(event => {
-    const eventDate = new Date(event.date);
-    const aujourdhui = new Date();
-    aujourdhui.setHours(0, 0, 0, 0);
-    return eventDate >= aujourdhui;
-  })
-  .sort((a, b) => new Date(a.date) - new Date(b.date)); // Trie par date
+// Filtre les événements à venir (pas encore passés), à partir de la BDD
+  const evenementsAVenir = events
+    .filter(event => {
+      const eventDate = new Date(event.date || event.dateEvenement);
+      const aujourdhui = new Date();
+      aujourdhui.setHours(0, 0, 0, 0);
+      return eventDate >= aujourdhui;
+    })
+    .sort((a, b) => new Date(a.date || a.dateEvenement) - new Date(b.date || b.dateEvenement));
 // Fonction pour formater les dates
-const formatDate = (dateString) => {
-  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  return new Date(dateString).toLocaleDateString('fr-FR', options);
-};
+  const formatDate = (dateString) => {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('fr-FR', options);
+  };
 // Fonction pour formater date avec jour de la semaine
-const formatDateComplete = (dateString) => {
-  const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
-  return new Date(dateString).toLocaleDateString('fr-FR', options);
-};
+  const formatDateComplete = (dateString) => {
+    const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('fr-FR', options);
+  };
 
-const READ_KEY = "readNotificationIds_v1";
-function getReadIds() {
-  try {
-    const raw = localStorage.getItem(READ_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    return new Set(Array.isArray(arr) ? arr : []);
-  } catch {
-    return new Set();
+  const READ_KEY = "readNotificationIds_v1";
+  function getReadIds() {
+    try {
+      const raw = localStorage.getItem(READ_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch {
+      return new Set();
+    }
   }
-}
-// Filtrer uniquement les nouvelles (isNew ET pas dans lus)
-const readIds = getReadIds();
-const newNotifications = notifications
-  .map(n => ({ ...n, isNew: n.isNew && !readIds.has(n.id) }))
-  .filter(n => n.isNew);
+
+
+//Récupération des notifs depuis la BDD
+const [notifications, setNotifications] = useState([]);
+const [notificationsError, setNotificationsError] = useState(null);
+const [notificationsLoading, setNotificationsLoading] = useState(true);
+const [selectedId, setSelectedId] = useState(null);
+
+const idUtilisateur = currentUser?.id;
+
+// Récupération des notifications
+useEffect(() => {
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch("/api/searchNotificationsParUtilisateur", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idUtilisateur })
+      });
+      const strResponse = (await response.text()).toString();
+      const data = JSON.parse(strResponse);
+      if (data.success) {
+        setNotifications(data.notifications);
+      } else {
+        throw new Error(data.error || "Erreur lors du chargement des notifications.");
+      }
+    } catch (err) {
+      console.error("Erreur chargement notifications:", err);
+      setNotificationsError(err.message);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+  fetchNotifications();
+}, [idUtilisateur]);
+
+
+// Filtrer uniquement les nouvelles
+  const readIds = getReadIds();
+  const newNotifications = notifications
+    .map(n => ({ ...n, lue: !readIds.has(n.idNotification) }))
+    .filter(n => n.lue);
+
+    localStorage.setItem("STARAC_DEBUG", JSON.stringify(newNotifications));
 
   return (
     <>
@@ -273,8 +337,12 @@ const newNotifications = notifications
             <div className="notifications-list">
               {newNotifications.length > 0 ? (
                 newNotifications.map((notif) => (
-                  <div key={notif.id} className="notification-item new" title={notif.message}>
-                    <span className="notification-text">{notif.message}</span>
+                  <div key={notif.idNotification} className="notification-item new" title={notif.descriptionCourte}>
+                    <li key={'/notifications?id=${notif.idNotification}'} className="topnav-item">
+                      <Link to={`/notifications?id=${notif.idNotification}`} className="topnav-link">
+                        {notif.descriptionCourte}
+                      </Link>
+                    </li>
                   </div>
                 ))
               ) : (
@@ -288,27 +356,36 @@ const newNotifications = notifications
             <div className="evenements-list">
               {evenementsAVenir.length > 0 ? (
                 evenementsAVenir.map((event) => (
-                  <div key={event.id} className="evenement-item">
+                  <div key={event.idEvenement} className="evenement-item">
                     <div className="evenement-date-block">
-                      <span className="evenement-jour">{new Date(event.date).getDate()}</span>
+                      <span className="evenement-jour">
+                        {new Date(event.date || event.dateEvenement).getDate()}
+                      </span>
                       <span className="evenement-mois">
-                        {new Date(event.date).toLocaleDateString('fr-FR', { month: 'short' })}
+                        {new Date(event.date || event.dateEvenement).toLocaleDateString('fr-FR', { month: 'short' })}
                       </span>
                     </div>
                     <div className="evenement-details">
                       <div className="evenement-header">
-                        <h3 className="evenement-titre">{event.titre}</h3>
-                        <span className={`evenement-type type-${event.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                          {event.type}
+                        <h3 className="evenement-titre">{event.titre || event.nom}</h3>
+                        <span
+                          className={`evenement-type type-${(event.type || event.typeEvenement || '').toLowerCase().replace(/\s+/g, '-')}`}
+                        >
+                          {event.type || event.typeEvenement}
                         </span>
                       </div>
                       <p className="evenement-description">{event.description}</p>
                       <div className="evenement-infos">
                         <span className="evenement-info">
-                          <strong>📅</strong> {formatDateComplete(event.date)}
+                          <strong>📅</strong> {formatDateComplete(event.date || event.dateEvenement)}
                         </span>
                         <span className="evenement-info">
-                          <strong>🕐</strong> {event.heure}
+                          <strong>🕐</strong>{" "}
+                          {event.heure !== undefined && event.minutes !== undefined
+                            ? `${event.heure.toString().padStart(2, "0")}:${event.minutes
+                                .toString()
+                                .padStart(2, "0")}`
+                            : event.heure || ""}
                         </span>
                         <span className="evenement-info">
                           <strong>📍</strong> {event.lieu}
@@ -317,9 +394,7 @@ const newNotifications = notifications
                     </div>
                   </div>
                 ))
-              ) : (
-                <p className="no-evenements">Aucun événement prévu pour le moment.</p>
-              )}
+                ) : (<p className="no-evenements">Aucun événement prévu pour le moment.</p>)}
             </div>
           </article>
         </section>
