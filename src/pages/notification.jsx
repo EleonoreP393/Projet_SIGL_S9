@@ -46,7 +46,7 @@ function Notification() {
   };
 
   const currentUser = getUser();
-  const userRole = currentUser ? currentUser.role : null;
+  const userRole = currentUser ? currentUser.idRole : null;
   const idUtilisateur = currentUser?.id;
 
   // Récupération des notifications

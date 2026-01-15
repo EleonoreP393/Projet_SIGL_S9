@@ -551,7 +551,7 @@ function Gestion() {
     }
   };
   const currentUser = getUser();
-  const userRole = currentUser ? currentUser.role : null;
+  const userRole = currentUser ? currentUser.idRole : null;
   const basePages = [
     { label: "Journal de Formation", path: "/journal" },
     { label: "Evénements", path: "/evenements" },

@@ -26,7 +26,7 @@ function Event() {
       const response = await fetch("/api/searchAllEvenement", { method: 'POST' });
       const data = await response.json();
       if (data.success) {
-        setEvents(data.evenements || []);
+        setEvents(data.evenement || []);
       } else {
         throw new Error(data.error || "Erreur chargement événements.");
       }
@@ -113,7 +113,7 @@ function Event() {
     }
   };
   const currentUser = getUser();
-  const userRole = currentUser ? currentUser.role : null;
+  const userRole = currentUser ? currentUser.idRole : null;
 
   const basePages = [
   { label: "Journal de Formation", path: "/journal" },
