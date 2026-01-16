@@ -122,7 +122,7 @@ router.post("/searchLivrableApprenti", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-        "SELECT * FROM Livrable WHERE idApprenti='" + idApprenti + "';"
+        "SELECT * FROM Livrable WHERE idapprenti='" + idApprenti + "';"
         );
 
         return res.json({success: true, evenement: result});

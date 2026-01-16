@@ -12,86 +12,15 @@ function Home() {
   const [eventsError, setEventsError] = React.useState(null);
   const [eventsLoading, setEventsLoading] = React.useState(true);
 
-  // Contacts (plus tard depuis BDD) - si null ou undefined, ne s'affiche pas
-  const contacts = [
-    {
-      id: 1,
-      role: "Maître d'apprentissage",
-      nom: "Jane Doe",
-      telephone: "06 12 34 56 78",
-      email: "jane.doe@example.com"
-    },
-    {
-      id: 2,
-      role: "Tuteur pédagogique",
-      nom: "John Smith",
-      telephone: "06 98 76 54 32",
-      email: "john.smith@example.com"
-    },
-    {
-      id: 3,
-      role: "Coordinatrice",
-      nom: "Marie Dupont",
-      telephone: "06 11 22 33 44",
-      email: "marie.dupont@example.com"
-    },
-    // Exemple : si Jury 1 n'existe pas dans la BDD, on ne l'ajoute pas au tableau
-    // ou on le met à null et on filtre
-    {
-      id: 4,
-      role: "Jury 1",
-      nom: "Pierre Martin",
-      telephone: "06 55 66 77 88",
-      email: "pierre.martin@example.com"
-    },
-    // null sera ignoré
-  ];
+  // --- ÉTAT POUR LES LIVRABLES DE LA BDD ---
+  const [livrables, setLivrables] = React.useState([]);
+  const [livrablesError, setLivrablesError] = React.useState(null);
+  const [livrablesLoading, setLivrablesLoading] = React.useState(true);
 
-  // Formulaires à compléter (plus tard depuis BDD)
-  const formulaires = [
-    {
-      id: 1,
-      nom: "Évaluation mi-parcours",
-      dateOuverture: "2025-09-15",
-      dateFermeture: "2025-10-15",
-      signe: false
-    },
-    {
-      id: 2,
-      nom: "Bilan de compétences",
-      dateOuverture: "2025-10-01",
-      dateFermeture: "2025-10-31",
-      signe: true   // déjà signé = ne s'affiche pas
-    },
-    {
-      id: 3,
-      nom: "Enquête de satisfaction",
-      dateOuverture: "2025-10-01",
-      dateFermeture: "2025-10-05",  // Ferme dans moins d'une semaine
-      signe: false
-    },
-    {
-      id: 4,
-      nom: "Fiche de présence septembre",
-      dateOuverture: "2025-09-01",
-      dateFermeture: "2025-09-30",  // Déjà fermé
-      signe: false
-    },
-    {
-      id: 5,
-      nom: "Auto-évaluation compétences",
-      dateOuverture: "2025-09-20",
-      dateFermeture: "2025-11-20",  // Encore largement ouvert
-      signe: false
-    },
-    {
-      id: 6,
-      nom: "Formulaire futur",
-      dateOuverture: "2025-11-01",  // Pas encore ouvert
-      dateFermeture: "2025-11-30",
-      signe: false
-    },
-  ];
+  // --- ÉTAT POUR LES CONTACTS DE LA BDD ---
+  const [contacts, setContacts] = React.useState([]);
+  const [contactsError, setContactsError] = React.useState(null);
+  const [contactsLoading, setContactsLoading] = React.useState(true);
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
@@ -108,6 +37,18 @@ function Home() {
       return null;
     }
   };
+  
+  // Fonction pour obtenir le rôle en fonction de l'idRole
+  const getRoleLabel = (idRole) => {
+    const roles = {
+      2: "Coordinatrice",
+      3: "Tuteur pédagogique",
+      4: "Jury",
+      5: "Maître d'apprentissage"
+    };
+    return roles[idRole] || "Rôle inconnu";
+  };
+  
   const currentUser = getUser();
   const userRole = currentUser ? currentUser.idRole : null;
 
@@ -143,6 +84,70 @@ function Home() {
     fetchEvents();
   }, []);
 
+  // --- CHARGEMENT DES LIVRABLES DEPUIS L'API ---
+  React.useEffect(() => {
+    const fetchLivrables = async () => {
+      try {
+        const idUtilisateur = currentUser?.id;
+        if (!idUtilisateur) {
+          setLivrables([]);
+          setLivrablesLoading(false);
+          return;
+        }
+        const response = await fetch("/api/searchLivrableApprenti", { 
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idApprenti: idUtilisateur })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setLivrables(data.evenement || []);
+        } else {
+          setLivrables([]);
+        }
+      } catch (err) {
+        console.error("Erreur chargement livrables Home:", err);
+        setLivrables([]);
+        setLivrablesError(err.message);
+      } finally {
+        setLivrablesLoading(false);
+      }
+    };
+    fetchLivrables();
+  }, [currentUser]);
+
+  // --- CHARGEMENT DES CONTACTS DEPUIS L'API ---
+  React.useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const idUtilisateur = currentUser?.id;
+        if (!idUtilisateur) {
+          setContacts([]);
+          setContactsLoading(false);
+          return;
+        }
+        const response = await fetch("/api/searchContactApprenti", { 
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idApprenti: idUtilisateur })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setContacts(data.contacts || []);
+        } else {
+          setContacts([]);
+        }
+      } catch (err) {
+        console.error("Erreur chargement contacts Home:", err);
+        setContacts([]);
+        setContactsError(err.message);
+      } finally {
+        setContactsLoading(false);
+      }
+    };
+    fetchContacts();
+  }, [currentUser]);
+
   // Fonction pour calculer le statut automatiquement
   const getStatut = (dateOuverture, dateFermeture) => {
     const aujourdhui = new Date();
@@ -170,16 +175,12 @@ function Home() {
     // Sinon, c'est ouvert normalement
     return 'ouvert';
   };
-  // Ajoute le statut calculé à chaque formulaire et filtre
-  const formulairesAfficher = formulaires
-    .map(form => ({
-      ...form,
-      statut: getStatut(form.dateOuverture, form.dateFermeture)
-    }))
-    .filter(form => 
-      !form.signe && 
-      (form.statut === 'ouvert' || form.statut === 'bientot_ferme')
-    );
+  // Ajoute le statut calculé à chaque livrable
+  const livrablesAfficher = livrables
+    .map(livrable => ({
+      ...livrable,
+      statut: getStatut(livrable.dateOuverture, livrable.dateFermeture)
+    }));
 
 // Filtre les événements à venir (pas encore passés), à partir de la BDD
   const evenementsAVenir = events
@@ -292,12 +293,12 @@ useEffect(() => {
               <h2 className="card-title">Coordonnées</h2>
               <div className="contacts-container">
                 {contacts.map((contact) => (
-                  <div key={contact.id} className="contact-card">
-                    <h3 className="contact-role">{contact.role}</h3>
+                  <div key={contact.idContact} className="contact-card">
+                    <h3 className="contact-role">{getRoleLabel(contact.idRole)}</h3>
                     <ul className="contact-details">
-                      <li><strong>Nom:</strong> {contact.nom}</li>
-                      <li><strong>Téléphone:</strong> {contact.telephone}</li>
-                      <li><strong>Email:</strong> {contact.email}</li>
+                      <li><strong>Nom:</strong> {contact.nomContact || "N/A"} {contact.prenomContact || "N/A"}</li>
+                      <li><strong>Téléphone:</strong> {contact.telephoneContact || "N/A"}</li>
+                      <li><strong>Email:</strong> {contact.emailContact || "N/A"}</li>
                     </ul>
                   </div>
                 ))}
@@ -306,29 +307,30 @@ useEffect(() => {
           )}
 
           <article className="card card--formulaires">
-            <h2 className="card-title">Formulaires à compléter</h2>
+            <h2 className="card-title">Livrables à compléter</h2>
             <div className="formulaires-list">
-              {formulairesAfficher.length > 0 ? (
-                formulairesAfficher.map((form) => (
-                  <div key={form.id} className={`formulaire-item status-${form.statut}`}>
+              {livrablesAfficher.length > 0 ? (
+                livrablesAfficher.map((livrable) => (
+                  <div key={livrable.idLivrable} className={`formulaire-item status-${livrable.statut}`}>
                     <div className="formulaire-header">
-                      <h3 className="formulaire-nom">{form.nom}</h3>
-                      <span className={`formulaire-badge badge-${form.statut}`}>
-                        {form.statut === 'ouvert' ? 'Ouvert' : 'Bientôt fermé'}
+                      <h3 className="formulaire-nom">{livrable.titre}</h3>
+                      <span className={`formulaire-badge badge-${livrable.statut}`}>
+                        {livrable.statut === 'ouvert' ? 'Ouvert' : livrable.statut === 'bientot_ferme' ? 'Bientôt fermé' : livrable.statut === 'pas_ouvert' ? 'Pas encore ouvert' : 'Fermé'}
                       </span>
                     </div>
+                    <p className="formulaire-description">{livrable.description}</p>
                     <div className="formulaire-dates">
                       <span className="date-info">
-                        <strong>Ouverture:</strong> {formatDate(form.dateOuverture)}
+                        <strong>Ouverture:</strong> {formatDate(livrable.dateOuverture)}
                       </span>
                       <span className="date-info">
-                        <strong>Fermeture:</strong> {formatDate(form.dateFermeture)}
+                        <strong>Fermeture:</strong> {formatDate(livrable.dateFermeture)}
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="no-formulaires">Aucun formulaire à compléter pour le moment.</p>
+                <p className="no-formulaires">Aucun livrable à compléter pour le moment.</p>
               )}
             </div>
           </article>

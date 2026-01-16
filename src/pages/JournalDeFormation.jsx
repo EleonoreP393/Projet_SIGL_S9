@@ -252,6 +252,34 @@ function Event() {
   const evenementsAVenir = events
     .sort((a, b) => new Date(a.dateFermeture) - new Date(b.dateFermeture));
 
+  // Fonction pour calculer le statut automatiquement
+  const getStatut = (dateOuverture, dateFermeture) => {
+    const aujourdhui = new Date();
+    aujourdhui.setHours(0, 0, 0, 0); // Réinitialise l'heure pour comparer uniquement les dates
+    
+    const ouverture = new Date(dateOuverture);
+    ouverture.setHours(0, 0, 0, 0);
+    
+    const fermeture = new Date(dateFermeture);
+    fermeture.setHours(0, 0, 0, 0);
+    // Si pas encore ouvert
+    if (aujourdhui < ouverture) {
+      return 'pas_ouvert';
+    }
+    // Si déjà fermé
+    if (aujourdhui > fermeture) {
+      return 'ferme';
+    }
+    // Calcul du nombre de jours avant la fermeture
+    const joursRestants = Math.ceil((fermeture - aujourdhui) / (1000 * 60 * 60 * 24));
+    // Si moins de 7 jours avant fermeture
+    if (joursRestants <= 7) {
+      return 'bientot_ferme';
+    }
+    // Sinon, c'est ouvert normalement
+    return 'ouvert';
+  };
+
   // Fonction pour formater la date
   const formatDateComplete = (dateString) => {
     const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
@@ -419,12 +447,13 @@ function Event() {
           )}
           <div className="events-grid">
             {evenementsAVenir.length > 0 ? (
-              evenementsAVenir.map((livrable) => (
-
+              evenementsAVenir.map((livrable) => {
+                const statut = getStatut(livrable.dateOuverture, livrable.dateFermeture);
+                return (
                 // On ajoute une classe 'selectable' et un écouteur de clic sur la carte entière
                 <article 
                   key={livrable.idLivrable} 
-                  className={`event-full-card ${isDeleteMode ? 'selectable' : ''}`}
+                  className={`event-full-card ${isDeleteMode ? 'selectable' : ''} status-${statut}`}
                   onClick={() => isDeleteMode && handleSelectionChange(livrable.idLivrable)} // Permet de cliquer sur la carte pour cocher
                 >
 
@@ -440,6 +469,9 @@ function Event() {
                   )}
                   <div className="event-full-header">
                     <h2 className="event-full-title">{livrable.titre}</h2>
+                    <span className={`formulaire-badge badge-${statut}`}>
+                      {statut === 'ouvert' ? 'Ouvert' : statut === 'bientot_ferme' ? 'Bientôt fermé' : statut === 'pas_ouvert' ? 'Pas encore ouvert' : 'Fermé'}
+                    </span>
                   </div>
                   <div className="event-full-infos">
                     <span>📅 Ouverture : {formatDateComplete(livrable.dateOuverture)}</span>
@@ -483,7 +515,8 @@ function Event() {
                     </div>
                   )}
                 </article>
-              ))
+              );
+              })
             ) : (
               <p className="no-events-message">Aucun livrable.</p>
             )}
