@@ -3,16 +3,17 @@ import {pool} from "../server.mjs";
 
 const router = express.Router();
 
+
 router.post("/createEvenement", async (req, res) => {
     try{
 
         const {nom, description, lieu, dateEvenement, typeEvenement, heure, minutes} = req.body || {};
-        if(!nom || !description || !lieu || !dateEvenement || !typeEvenement || !heure || !minutes){
+        if(!nom || !description || !lieu || !dateEvenement || !typeEvenement || heure==undefined || !minutes==undefined){
             return res.status(400).json({ success: false, error: "Champs requis" });
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO evenement (nom, description, lieu, dateEvenement, typeEvenement, heure, minutes) values ('" + nom + "', '" + description + "', '" + lieu + "', '" + dateEvenement + "', '" + typeEvenement + "', " + heure + ", " + minutes + ");"
+            "INSERT INTO evenement (nom, description, lieu, dateEvenement, typeEvenement, heure, minutes) VALUES (?, ?, ?, ?, ?, ?, ?)",[nom, description, lieu, dateEvenement, typeEvenement, heure, minutes]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création de l'événement." });
@@ -56,7 +57,7 @@ router.post("/searchAllEvenement", async (req, res) => {
             "SELECT * FROM Evenement;"
         );
 
-        return res.json({success: true, evenement: result});
+        return res.json({success: true, evenements: result});
 
     }catch(e){
         console.error(e);

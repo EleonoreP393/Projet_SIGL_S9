@@ -49,7 +49,7 @@ router.post("/searchAllCompte", async (req, res) => {
             "SELECT * FROM Utilisateur;"
         );
 
-        return res.json({success: true});
+        return res.json({success: true, utilisateurs: result});
 
     }catch(e){
         console.error(e);

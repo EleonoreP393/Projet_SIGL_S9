@@ -870,12 +870,12 @@ function Gestion() {
                         onChange={handleNewMaitreChange}
                         required
                       >
+                        <option value="">-- Sélectionner une entreprise --</option>
                         {entreprises.map((ent) => (
                           <option key={ent.idEntreprise} value={ent.idEntreprise}>
                             {ent.nom}
                           </option>
                         ))}
-                        console.log("entreprises:", entreprises);
                       </select>
                     </div>
                   </>

@@ -26,7 +26,7 @@ function Event() {
       const response = await fetch("/api/searchAllEvenement", { method: 'POST' });
       const data = await response.json();
       if (data.success) {
-        setEvents(data.evenement || []);
+        setEvents(data.evenements || []);
       } else {
         throw new Error(data.error || "Erreur chargement événements.");
       }
@@ -35,6 +35,7 @@ function Event() {
     }
   };
 
+  console.log("Events loaded:", events);
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -141,7 +142,7 @@ function Event() {
       return eventDate >= aujourdhui;
     })
     .sort((a, b) => new Date(a.dateEvenement) - new Date(b.dateEvenement));
-
+console.log("Événements à venir triés:", evenementsAVenir);
   // Fonction pour formater la date
   const formatDateComplete = (dateString) => {
     const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };

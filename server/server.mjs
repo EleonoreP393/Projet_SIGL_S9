@@ -11,6 +11,7 @@ export const pool = mysql.createPool({
   database: process.env.DB_NAME || "staracademy",
   waitForConnections: true,
   connectionLimit: 20,
+  multipleStatements: true
 });
 
 // 2) Importe les routes APRÈS l'export du pool

@@ -12,9 +12,12 @@ router.post("/createApprenti", async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO apprenti (idUtilisateur, idPromotion, idEntreprise, idMa, idJury, idTp) values ('" + idUtilisateur + "', '" + idPromotion + "', '" + idEntreprise + "', '" + idMa + "', '" + idJury + "', '" + idTp + "');"
+            "INSERT INTO apprenti (idUtilisateur, idPromotion, idEntreprise, idMa, idJury, idTp) values ('" + idUtilisateur + "', '" + idPromotion + "', '" + idEntreprise + "', '" + idMa + "', '" + idJury + "', '" + idTp + "')"
         );
-        if (result.affectedRows === 0) {
+        const [result2] = await pool.execute(
+            "INSERT INTO contact (idContact, idAlternant) values (" + idMa + ", " + idUtilisateur + "),(" + idJury + ", " + idUtilisateur + "), (" + idTp + ", " + idUtilisateur + ") ;"
+        );
+        if (result.affectedRows === 0 && result2.affectedRows === 0) {
             return res.status(404).json({ success: false, error: "Erreur lors de la création de l'apprenti." });
         }
 

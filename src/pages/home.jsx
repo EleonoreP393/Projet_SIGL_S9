@@ -70,7 +70,7 @@ function Home() {
         const response = await fetch("/api/searchAllEvenement", { method: "POST" });
         const data = await response.json();
         if (data.success) {
-          setEvents(data.evenement || []);
+          setEvents(data.evenements || []);
         } else {
           throw new Error(data.error || "Erreur lors du chargement des événements.");
         }
